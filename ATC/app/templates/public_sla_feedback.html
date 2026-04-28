@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Encuesta de satisfaccion - Ticket #{{ ticket.id }}</title>
+  <style>
+    :root{
+      --bg:#f3f7fb;
+      --card:#ffffff;
+      --ink:#10203a;
+      --muted:#5f6f86;
+      --line:#d8e1ee;
+      --brand:#16388b;
+      --brand-2:#2957d5;
+      --ok:#166534;
+      --ok-bg:#dcfce7;
+      --warn:#a16207;
+      --warn-bg:#fef3c7;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Arial,sans-serif;
+      background:radial-gradient(circle at top,#e9f1ff 0%,var(--bg) 46%,#eef3f9 100%);
+      color:var(--ink);
+    }
+    .wrap{
+      max-width:760px;
+      margin:0 auto;
+      padding:28px 18px 44px;
+    }
+    .card{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:28px;
+      overflow:hidden;
+      box-shadow:0 24px 60px rgba(16,32,58,.12);
+    }
+    .hero{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:20px;
+      padding:28px;
+      background:linear-gradient(135deg,var(--brand) 0%,var(--brand-2) 100%);
+      color:#fff;
+    }
+    .eyebrow{
+      margin:0 0 10px;
+      font-size:13px;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      opacity:.85;
+    }
+    .hero h1{
+      margin:0 0 8px;
+      font-size:38px;
+      line-height:1.05;
+    }
+    .hero p{
+      margin:0;
+      font-size:17px;
+      opacity:.92;
+    }
+    .hero img{
+      width:132px;
+      max-width:38%;
+      height:auto;
+      object-fit:contain;
+      filter:drop-shadow(0 10px 18px rgba(0,0,0,.18));
+    }
+    .content{
+      padding:28px;
+    }
+    .lead{
+      font-size:18px;
+      line-height:1.75;
+      margin:0 0 18px;
+    }
+    .status{
+      display:inline-block;
+      padding:10px 14px;
+      border-radius:999px;
+      font-weight:700;
+      margin:0 0 22px;
+    }
+    .status.done{
+      background:var(--ok-bg);
+      color:var(--ok);
+    }
+    .status.pending{
+      background:var(--warn-bg);
+      color:var(--warn);
+    }
+    .panel{
+      padding:22px;
+      border:1px solid var(--line);
+      border-radius:22px;
+      background:#f8fbff;
+      margin-bottom:18px;
+    }
+    .panel h2{
+      margin:0 0 14px;
+      font-size:24px;
+    }
+    .panel p{
+      margin:0 0 16px;
+      color:var(--muted);
+      line-height:1.65;
+      font-size:15px;
+    }
+    .faces{
+      display:flex;
+      flex-wrap:wrap;
+      gap:12px;
+    }
+    .face{
+      width:74px;
+      text-decoration:none;
+      text-align:center;
+      color:var(--ink);
+    }
+    .face-bubble{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      width:74px;
+      height:74px;
+      border-radius:22px;
+      border:1px solid var(--line);
+      background:#fff;
+      font-size:34px;
+      transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+    }
+    .face:hover .face-bubble{
+      transform:translateY(-2px);
+      box-shadow:0 16px 30px rgba(16,32,58,.10);
+    }
+    .face.selected .face-bubble{
+      border-color:#60a5fa;
+      box-shadow:0 0 0 4px rgba(96,165,250,.18);
+    }
+    .face small{
+      display:block;
+      margin-top:8px;
+      font-size:13px;
+      color:var(--muted);
+    }
+    .choices{
+      display:flex;
+      flex-wrap:wrap;
+      gap:12px;
+    }
+    .choice{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-width:96px;
+      padding:14px 18px;
+      border-radius:16px;
+      border:1px solid var(--line);
+      text-decoration:none;
+      font-weight:700;
+      color:var(--ink);
+      background:#fff;
+      transition:transform .15s ease, box-shadow .15s ease;
+    }
+    .choice:hover{
+      transform:translateY(-2px);
+      box-shadow:0 16px 30px rgba(16,32,58,.10);
+    }
+    .choice.selected-yes{
+      border-color:#86efac;
+      background:#dcfce7;
+      color:#166534;
+    }
+    .choice.selected-no{
+      border-color:#fca5a5;
+      background:#fee2e2;
+      color:#991b1b;
+    }
+    .summary{
+      margin-top:22px;
+      padding:18px;
+      border-radius:20px;
+      background:#eef6ff;
+      border:1px solid #cfe0ff;
+    }
+    .summary p{
+      margin:0 0 10px;
+      line-height:1.7;
+    }
+    .summary p:last-child{
+      margin-bottom:0;
+    }
+    @media (max-width: 640px){
+      .hero{
+        flex-direction:column;
+        align-items:flex-start;
+      }
+      .hero img{
+        width:112px;
+        max-width:none;
+      }
+      .hero h1{
+        font-size:31px;
+      }
+      .panel{
+        padding:18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="card">
+      <header class="hero">
+        <div>
+          <p class="eyebrow">Soporte ATC</p>
+          <h1>Encuesta de satisfaccion</h1>
+          <p>Ticket #{{ ticket.id }}</p>
+        </div>
+        <img src="/static/img/logo-atc.png" alt="ATC">
+      </header>
+
+      <div class="content">
+        <p class="lead">Hola {{ ticket.requester.name if ticket.requester and ticket.requester.name else "Cliente" }},</p>
+        <p class="lead">Gracias por ayudarnos a mejorar. Su opinion es muy importante para nosotros y cada respuesta nos permite entregar una mejor atencion.</p>
+
+        {% if is_complete %}
+        <div class="status done">Encuesta respondida con exito</div>
+        {% else %}
+        <div class="status pending">Puede responder una o ambas preguntas desde esta pagina</div>
+        {% endif %}
+
+        <section class="panel">
+          <h2>1. La atencion del tecnico fue buena</h2>
+          <p>Seleccione la cara que mejor represente su experiencia.</p>
+          <div class="faces">
+            {% set emojis = {1:'😡', 2:'🙁', 3:'😐', 4:'🙂', 5:'😁'} %}
+            {% for value in [1,2,3,4,5] %}
+            <a class="face{% if feedback.technician_rating == value %} selected{% endif %}" href="{{ rating_links[value] }}">
+              <span class="face-bubble">{{ emojis[value] }}</span>
+              <small>{{ value }}</small>
+            </a>
+            {% endfor %}
+          </div>
+        </section>
+
+        <section class="panel">
+          <h2>2. El tiempo de resolucion le parecio satisfactorio</h2>
+          <p>Seleccione la opcion que mejor describa su experiencia.</p>
+          <div class="choices">
+            <a class="choice{% if feedback.resolution_satisfied is sameas true %} selected-yes{% endif %}" href="{{ resolved_yes_link }}">Si</a>
+            <a class="choice{% if feedback.resolution_satisfied is sameas false %} selected-no{% endif %}" href="{{ resolved_no_link }}">No</a>
+          </div>
+        </section>
+
+        <section class="summary">
+          <p><strong>Estado actual:</strong></p>
+          <p>Atencion del tecnico:
+            {% if feedback.technician_rating %}
+              {{ feedback.technician_rating }}/5
+            {% else %}
+              pendiente
+            {% endif %}
+          </p>
+          <p>Tiempo de resolucion:
+            {% if feedback.resolution_satisfied is sameas true %}
+              Si
+            {% elif feedback.resolution_satisfied is sameas false %}
+              No
+            {% else %}
+              pendiente
+            {% endif %}
+          </p>
+          {% if is_complete %}
+          <p>Gracias por ser parte de ATC.</p>
+          {% else %}
+          <p>Puede volver a hacer clic en cualquier opcion si desea actualizar su respuesta.</p>
+          {% endif %}
+        </section>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

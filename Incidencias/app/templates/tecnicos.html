@@ -1,0 +1,1512 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Registros de Tecnicos</title>
+  <style>
+    :root {
+      --bg-1: #09181c;
+      --bg-2: #10262d;
+      --bg-3: #163840;
+      --panel-bg: rgba(9, 22, 26, 0.94);
+      --panel-border: rgba(255, 255, 255, 0.10);
+      --text-main: #f4f8f9;
+      --text-soft: #b9cbd1;
+      --cell-bg: rgba(8, 18, 22, 0.96);
+      --cell-alt: rgba(12, 27, 32, 0.96);
+      --cell-border: rgba(188, 207, 214, 0.10);
+      --field-bg: #091217;
+      --field-border: rgba(194, 210, 218, 0.20);
+      --orange-1: #ff6e23;
+      --orange-2: #ff8b33;
+      --orange-3: #e85d14;
+      --success: #34d399;
+      --danger: #f87171;
+      --shadow: 0 22px 50px rgba(0, 0, 0, 0.24);
+    }
+
+    html, body {
+      min-height: 100%;
+    }
+
+    body {
+      font-family: "Segoe UI", sans-serif;
+      margin: 0;
+      min-height: 100vh;
+      padding: 34px 36px 44px;
+      color: var(--text-main);
+      background:
+        radial-gradient(circle at 18% 18%, rgba(255, 255, 255, 0.05), transparent 24%),
+        radial-gradient(circle at 82% 12%, rgba(255, 125, 53, 0.08), transparent 18%),
+        linear-gradient(145deg, var(--bg-1) 0%, var(--bg-2) 42%, var(--bg-3) 100%);
+      background-attachment: fixed;
+    }
+
+    .loader {
+      border: 4px solid rgba(255, 255, 255, 0.10);
+      border-top: 4px solid var(--orange-2);
+      border-radius: 50%;
+      width: 34px;
+      height: 34px;
+      animation: spin 0.9s linear infinite;
+      margin: 10px auto;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .encabezado-principal {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 18px;
+      max-width: 1220px;
+      margin: 0 auto 22px;
+      padding: 18px 22px;
+      border-radius: 26px;
+      background: var(--panel-bg);
+      border: 1px solid var(--panel-border);
+      box-shadow: var(--shadow);
+    }
+
+    .marca-principal {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      min-width: 0;
+    }
+
+    .logo-principal {
+      height: 72px;
+      width: auto;
+      object-fit: contain;
+      flex: 0 0 auto;
+    }
+
+    .titulo-central {
+      margin: 0;
+      font-size: 36px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: var(--text-main);
+    }
+
+    .subtitulo {
+      margin: 4px 0 0;
+      color: var(--text-soft);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .sesion-panel {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 10px;
+    }
+
+    #sesionInfo {
+      font-weight: 700;
+      color: var(--text-main);
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 999px;
+      padding: 8px 14px;
+    }
+
+    .toolbar-panel,
+    .tabla-shell {
+      max-width: 1220px;
+      margin: 0 auto 22px;
+      background: var(--panel-bg);
+      border: 1px solid var(--panel-border);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .toolbar-panel {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      padding: 16px 18px;
+      flex-wrap: wrap;
+    }
+
+    .toolbar-panel label {
+      font-weight: 700;
+      color: var(--text-soft);
+    }
+
+    .tabla-shell {
+      padding: 14px;
+    }
+
+    .tabla-scroll {
+      overflow-x: auto;
+      border-radius: 18px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: transparent;
+      border-radius: 18px;
+      overflow: hidden;
+      font-size: 14px;
+      table-layout: fixed;
+      min-width: 980px;
+    }
+
+    th, td {
+      padding: 12px 10px;
+      text-align: center;
+      border: 1px solid var(--cell-border);
+      vertical-align: middle;
+      word-break: normal;
+      overflow-wrap: anywhere;
+    }
+
+    #tablaRegistro th:nth-child(1),
+    #tablaRegistro td:nth-child(1) { width: 64px; }
+    #tablaRegistro th:nth-child(2),
+    #tablaRegistro td:nth-child(2) { width: 132px; }
+    #tablaRegistro th:nth-child(3),
+    #tablaRegistro td:nth-child(3) { width: 120px; }
+    #tablaRegistro th:nth-child(4),
+    #tablaRegistro td:nth-child(4) { width: 160px; }
+    #tablaRegistro th:nth-child(6),
+    #tablaRegistro td:nth-child(6) { width: 92px; }
+    #tablaRegistro th:nth-child(7),
+    #tablaRegistro td:nth-child(7) { width: 92px; }
+
+    .detalle-resumen {
+      text-align: left;
+      line-height: 1.35;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .odt-detalle-completo {
+      margin: 0 0 12px;
+      padding: 12px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: var(--text-soft);
+      line-height: 1.45;
+      white-space: normal;
+      word-break: break-word;
+    }
+
+    th {
+      background: linear-gradient(135deg, var(--orange-3) 0%, var(--orange-2) 100%);
+      color: white;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    td {
+      background: var(--cell-bg);
+      color: var(--text-main);
+    }
+
+    tbody tr:nth-child(even) td {
+      background: var(--cell-alt);
+    }
+
+    select, input, textarea, button {
+      font-size: 14px;
+      box-sizing: border-box;
+      font-family: "Segoe UI", sans-serif;
+    }
+
+    select, input, textarea {
+      width: 100%;
+      padding: 10px 12px;
+      margin-top: 6px;
+      color: #fff;
+      background: var(--field-bg);
+      border: 1px solid var(--field-border);
+      border-radius: 12px;
+    }
+
+    select:focus, input:focus, textarea:focus {
+      outline: none;
+      border-color: rgba(255, 139, 51, 0.54);
+      box-shadow: 0 0 0 3px rgba(255, 110, 35, 0.12);
+    }
+
+    select {
+      color-scheme: dark;
+    }
+
+    button {
+      padding: 10px 16px;
+      background: #111b1f;
+      color: white;
+      border: none;
+      border-radius: 14px;
+      cursor: pointer;
+      font-weight: 700;
+      transition: transform 0.18s ease, background-color 0.18s ease, box-shadow 0.18s ease;
+    }
+
+    button:hover {
+      background: #1a272c;
+      transform: translateY(-1px);
+    }
+
+    .btn-primario {
+      background: linear-gradient(135deg, var(--orange-1) 0%, var(--orange-2) 100%);
+      box-shadow: 0 12px 24px rgba(255, 110, 35, 0.20);
+    }
+
+    .btn-primario:hover {
+      background: linear-gradient(135deg, #ff7d3a 0%, #ff9a52 100%);
+    }
+
+    .btn-secundario {
+      width: auto;
+      margin: 0;
+      padding: 10px 14px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .cliente-link {
+      color: #8fd8ff;
+      cursor: pointer;
+      text-decoration: none;
+      font-weight: 700;
+    }
+
+    .cliente-link:hover {
+      color: #ffffff;
+      text-decoration: underline;
+    }
+
+    .pantalla-carga-inicial,
+    #modalFinalizar,
+    #modalProgreso,
+    #modalEnProceso {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.62);
+      z-index: 9999;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      backdrop-filter: blur(5px);
+    }
+
+    .pantalla-carga-inicial {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .modal-card {
+      width: 100%;
+      max-width: 700px;
+      margin: 20px auto;
+      background: var(--panel-bg);
+      color: var(--text-main);
+      padding: 24px;
+      border-radius: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      box-shadow: 0 34px 72px rgba(0, 0, 0, 0.42);
+      position: relative;
+    }
+
+    .modal-card h3 {
+      margin: 0 0 16px;
+      text-align: center;
+      color: var(--text-main);
+      font-size: 24px;
+    }
+
+    .modal-close-btn {
+      position: absolute;
+      top: 10px;
+      right: 12px;
+      width: auto;
+      height: auto;
+      border: none;
+      border-radius: 0;
+      background: transparent;
+      color: #fff;
+      font-size: 30px;
+      line-height: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: none;
+      padding: 0 2px;
+    }
+
+    .modal-close-btn:hover {
+      background: transparent;
+      transform: none;
+      box-shadow: none;
+      color: #ffd8c2;
+    }
+
+    .modal-card.modal-progreso {
+      max-width: 320px;
+      text-align: center;
+    }
+
+    .modal-card.modal-en-proceso {
+      max-width: 760px;
+    }
+
+    .modal-actions {
+      margin-top: 14px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    .infoSucursal {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 20px;
+      padding: 18px;
+      margin-top: 18px;
+      font-size: 14px;
+      text-align: left;
+      color: var(--text-main);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+    }
+
+    .infoSucursal h4 {
+      font-size: 18px;
+      margin: 0 0 14px;
+      text-align: center;
+      color: var(--text-main);
+    }
+
+    .infoSucursal p {
+      margin: 10px 0;
+      color: var(--text-soft);
+      line-height: 1.5;
+    }
+
+    .infoSucursal strong {
+      color: #ffffff;
+    }
+
+    .infoSucursal a {
+      color: #8fd8ff;
+    }
+
+    .infoSucursal-cargando,
+    .info-vacio,
+    .info-error {
+      text-align: center;
+    }
+
+    .info-error {
+      color: #ffd1d1;
+    }
+
+    .hdr-incidencias {
+      cursor: pointer;
+      user-select: none;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 6px;
+      margin-top: 18px;
+      text-align: center;
+      color: var(--text-main);
+    }
+
+    .lista-incidencias {
+      list-style: none;
+      padding-left: 0;
+      margin: 10px 0 0;
+    }
+
+    .inc-item {
+      margin-bottom: 10px;
+      padding: 12px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .inc-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .inc-fecha {
+      cursor: text;
+      font-weight: 700;
+      color: var(--text-main);
+      text-decoration: none;
+    }
+
+    .inc-problema {
+      color: var(--text-soft);
+    }
+
+    .inc-obs {
+      display: block;
+      white-space: pre-line;
+      margin-top: 8px;
+      background: rgba(0, 0, 0, 0.18);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 10px;
+      border-radius: 12px;
+      color: var(--text-main);
+    }
+
+    .btn-ver-mas {
+      margin-top: 6px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .imagenes-lista {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .imagen-item {
+      flex: 1 1 120px;
+      text-align: center;
+    }
+
+    .imagen-item a {
+      display: inline-block;
+      margin: 6px 0;
+    }
+
+    .action-buttons {
+      text-align: center;
+      margin-top: 16px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    #mensajeExito {
+      display: none;
+      text-align: center;
+      color: var(--success);
+      margin-top: 20px;
+      font-weight: 700;
+    }
+
+    @media screen and (max-width: 900px) {
+      body {
+        padding: 18px;
+      }
+
+      .encabezado-principal {
+        grid-template-columns: 1fr;
+        text-align: center;
+      }
+
+      .marca-principal {
+        justify-content: center;
+        flex-direction: column;
+      }
+
+      .sesion-panel {
+        align-items: center;
+      }
+
+      .titulo-central {
+        font-size: 30px;
+      }
+    }
+
+    @media screen and (max-width: 768px) {
+      table, thead, tbody, th, td, tr {
+        display: block;
+      }
+
+      thead {
+        display: none;
+      }
+
+      tbody tr {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 18px;
+        margin-bottom: 18px;
+        padding: 10px;
+        box-shadow: 0 18px 34px rgba(0, 0, 0, 0.18);
+      }
+
+      tbody td {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px;
+        border-bottom: 1px solid var(--cell-border);
+      }
+
+      tbody td::before {
+        content: attr(data-label);
+        font-weight: 700;
+        font-size: 13px;
+        text-align: left;
+        color: var(--text-soft);
+        flex: 1;
+      }
+
+      tbody td:last-child {
+        border-bottom: none;
+      }
+
+      tbody td span,
+      tbody td a {
+        flex: 2;
+        text-align: right;
+        word-break: break-word;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="encabezado-principal">
+    <div class="marca-principal">
+    <img src="/shared-static/img/logo-atc.png" alt="Logo ATC" class="logo-principal">
+    <div>
+      <h3 class="titulo-central">Registros de Tecnicos</h3>
+      <p class="subtitulo">Gestiona tu cola de trabajo, revisa antecedentes y cierra ODT de forma responsable.</p>
+    </div>
+    </div>
+    <div class="sesion-panel">
+      <span id="sesionInfo"></span>
+      <button type="button" class="btn-secundario" onclick="cerrarSesion()">Cerrar sesion</button>
+    </div>
+  </div>
+
+  <div id="pantallaCargaInicial" class="pantalla-carga-inicial">
+    <div class="loader"></div>
+    <p id="mensajeCarga" class="subtitulo">Cargando tabla...</p>
+  </div>
+
+  <div class="toolbar-panel">
+    <select id="filtroEstado" onchange="filtrarPorEstado()" style="max-width:200px;margin:0;display:inline-block;">
+      <option value="Todos">Todos</option>
+      <option value="En Proceso" selected>En Proceso</option>
+      <option value="Pendiente">Pendiente</option>
+      <option value="Terminado">Terminado</option>
+    </select>
+    <button type="button" class="btn-secundario" onclick="abrirBandejaRendiciones()">Rendiciones</button>
+  </div>
+
+  <div id="registroForm" class="tabla-shell">
+    <div class="tabla-scroll">
+      <table id="tablaRegistro">
+        <thead>
+          <tr>
+            <th>ODT</th>
+            <th>Fecha</th>
+            <th>Cliente</th>
+            <th>Servicio</th>
+            <th>Detalle del Servicio</th>
+            <th>Estado</th>
+            <th>Prioridad</th>
+          </tr>
+        </thead>
+        <tbody id="registrosExistentes"></tbody>
+      </table>
+    </div>
+
+    <datalist id="listaClientes"></datalist>
+    <datalist id="listaProblemas"></datalist>
+    <datalist id="listaEstados"></datalist>
+    <datalist id="listaTecnicos"></datalist>
+  </div>
+
+  <div id="modalFinalizar">
+    <div id="modalContent" class="modal-card">
+      <button type="button" class="modal-close-btn" aria-label="Cerrar modal finalizar" onclick="cerrarModalFinalizar()">&times;</button>
+      <h3>Por favor, adjunta una Foto y agrega una Observacion</h3>
+      <div id="contenedorFotos">
+        <input type="file" class="fotoAdjuntar" required />
+      </div>
+      <div style="margin-top:8px;">
+        <button type="button" class="btn-secundario" onclick="agregarOtroArchivo()">+ Agregar otra foto</button>
+      </div>
+      <textarea id="observacion" placeholder="Escribe una observacion..." required></textarea>
+      <button type="button" class="btn-primario" onclick="guardarYFinalizar()">Guardar y Finalizar</button>
+    </div>
+  </div>
+
+  <div id="modalProgreso">
+    <div class="contenido modal-card modal-progreso">
+      <p id="mensajeEstado" style="font-weight:bold;font-size:16px;color:var(--text-main);">Procesando...</p>
+      <div class="loader" style="margin-top:15px;"></div>
+    </div>
+  </div>
+
+  <div id="mensajeExito">Registro guardado correctamente.</div>
+
+  <div id="modalEnProceso">
+    <div class="modal-card modal-en-proceso">
+      <button type="button" class="modal-close-btn" aria-label="Cerrar modal pendiente" onclick="cerrarModalEnProceso()">&times;</button>
+      <h3>Informacion En Proceso</h3>
+      <label><b>Grado de avance (%)</b></label>
+      <input type="number" id="gradoAvance" min="0" max="100" placeholder="Ej: 50" />
+      <label style="margin-top:10px;"><b>Observacion</b></label>
+      <textarea id="observacionEnProceso" placeholder="Describe el estado actual..." rows="4"></textarea>
+      <div class="modal-actions">
+        <button class="btn-secundario" type="button" onclick="cerrarModalEnProceso()">Cancelar</button>
+        <button class="btn-primario" onclick="guardarEstadoEnProceso()">Guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const tecnicoActual = {{ tecnico|tojson }};
+    const tokenSesion = {{ token|tojson }};
+    let currentODT = "";
+    let listasGlobales = {};
+    let clienteActivo = null;
+    let cantidadRegistrosActual = 0;
+    let odtToReopen = "";
+    let clienteToReopen = "";
+    let reopenedEstado = "";
+    const geocodeCache = new Map();
+    const tecnicoFiltrado = (typeof tecnicoActual !== "undefined" ? String(tecnicoActual || "") : "").trim().toLowerCase();
+
+    function escapeHTML(str) {
+      return String(str || "").replace(/[&<>\"']/g, (m) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        "\"": "&quot;",
+        "'": "&#39;",
+      }[m]));
+    }
+
+    function normalizarTexto(str) {
+      return String(str || "")
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .trim();
+    }
+
+    function normalizarDireccion(str) {
+      return normalizarTexto(str).replace(/[^a-z0-9\s]/g, " ").replace(/\s+/g, " ").trim();
+    }
+
+    function extraerNumeroDireccion(str) {
+      const m = String(str || "").match(/\b(\d{2,6})\b/);
+      return m ? m[1] : "";
+    }
+
+    function parseCoords(latRaw, lngRaw) {
+      const lat = Number(String(latRaw || "").replace(",", "."));
+      const lng = Number(String(lngRaw || "").replace(",", "."));
+      if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+      if (lat < -90 || lat > 90 || lng < -180 || lng > 180) return null;
+      return { latitud: lat.toFixed(6), longitud: lng.toFixed(6) };
+    }
+
+    function construirLinksNavegacionPorDireccion(direccion, cliente = "") {
+      const dir = String(direccion || "").trim();
+      const cli = String(cliente || "").trim();
+      const query = [dir, cli, "Chile"].filter(Boolean).join(", ");
+      if (!query) return { google: "", waze: "" };
+      return {
+        google: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`,
+        waze: `https://waze.com/ul?q=${encodeURIComponent(query)}&navigate=yes`,
+      };
+    }
+
+    async function geocodificarDireccionCliente(direccion) {
+      const dir = String(direccion || "").trim();
+      const key = normalizarDireccion(dir);
+      if (!key) return { latitud: "", longitud: "" };
+      if (geocodeCache.has(key)) return geocodeCache.get(key);
+
+      const numeroRef = extraerNumeroDireccion(dir);
+      const consultas = [dir];
+      if (!normalizarTexto(dir).includes("chile")) consultas.push(`${dir}, Chile`);
+
+      const scoreCandidato = (displayName, numeroCandidato) => {
+        const dNorm = normalizarDireccion(displayName);
+        const tRef = new Set(key.split(" ").filter(Boolean));
+        const tCan = new Set(dNorm.split(" ").filter(Boolean));
+        let inter = 0;
+        tRef.forEach((t) => { if (tCan.has(t)) inter += 1; });
+        let score = inter;
+        if (dNorm.includes(key) || key.includes(dNorm)) score += 3;
+        if (numeroRef && numeroCandidato && String(numeroRef) === String(numeroCandidato)) score += 8;
+        if (numeroRef && numeroCandidato && String(numeroRef) !== String(numeroCandidato)) score -= 6;
+        return score;
+      };
+
+      const fetchJSON = async (url) => {
+        const res = await fetch(url, { headers: { "Accept": "application/json" } });
+        if (!res.ok) return null;
+        return res.json();
+      };
+
+      for (const q of consultas) {
+        // 1) Nominatim - mejor para direccion exacta con numero.
+        try {
+          const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=jsonv2&addressdetails=1&limit=5&countrycodes=cl`;
+          const payload = await fetchJSON(url);
+          if (Array.isArray(payload) && payload.length) {
+            let best = null;
+            let bestScore = -999;
+            payload.forEach((item) => {
+              const coords = parseCoords(item?.lat, item?.lon);
+              if (!coords) return;
+              const house = item?.address?.house_number || "";
+              const score = scoreCandidato(item?.display_name || "", house);
+              if (score > bestScore) {
+                bestScore = score;
+                best = coords;
+              }
+            });
+            if (best && bestScore >= 4) {
+              geocodeCache.set(key, best);
+              return best;
+            }
+          }
+        } catch (_) {}
+
+        // 2) maps.co
+        try {
+          const url = `https://geocode.maps.co/search?q=${encodeURIComponent(q)}`;
+          const payload = await fetchJSON(url);
+          if (Array.isArray(payload) && payload.length) {
+            const first = payload[0] || {};
+            const coords = parseCoords(first?.lat, first?.lon);
+            if (coords) {
+              geocodeCache.set(key, coords);
+              return coords;
+            }
+          }
+        } catch (_) {}
+      }
+
+      const vacio = { latitud: "", longitud: "" };
+      geocodeCache.set(key, vacio);
+      return vacio;
+    }
+
+    function estadoCanonico(estado) {
+      const e = normalizarTexto(estado);
+      if (!e) return "Pendiente";
+      if (e.includes("proceso")) return "En Proceso";
+      if (e.includes("termin") || e.includes("final")) return "Terminado";
+      if (e.includes("pend")) return "Pendiente";
+      return String(estado || "Pendiente").trim();
+    }
+
+    function limpiarDetalleObservacion(valor) {
+      return String(valor || "")
+        .replace(/\r\n/g, "\n")
+        .replace(/\r/g, "\n")
+        .split("\n")
+        .map((x) => x.trim())
+        .filter(Boolean)
+        .join(" | ")
+        .replace(/\s{2,}/g, " ")
+        .trim();
+    }
+
+    function detalleCompletoDesdeFila(fila) {
+      const partes = [
+        limpiarDetalleObservacion(fila?.[6] || ""),   // Registro operaciones
+        limpiarDetalleObservacion(fila?.[15] || ""),  // Gestión soporte
+        limpiarDetalleObservacion(fila?.[16] || ""),  // Gestión servicio técnico
+      ];
+
+      const vistos = new Set();
+      const unicos = [];
+      partes.forEach((p) => {
+        if (!p) return;
+        const key = normalizarTexto(p);
+        if (vistos.has(key)) return;
+        vistos.add(key);
+        unicos.push(p);
+      });
+
+      return unicos.join(" | ");
+    }
+
+    function resumenDetalleTabla(texto, maxLen = 140) {
+      const limpio = limpiarDetalleObservacion(texto);
+      if (!limpio) return "";
+      if (limpio.length <= maxLen) return limpio;
+      return `${limpio.slice(0, maxLen - 1).trim()}…`;
+    }
+
+    function detalleCompletoHTML(texto) {
+      const limpio = limpiarDetalleObservacion(texto);
+      if (!limpio) return "";
+      const partes = limpio.split(" | ").map((p) => p.trim()).filter(Boolean);
+      if (!partes.length) return "";
+      return partes.map((p) => escapeHTML(p)).join("<br>");
+    }
+
+    async function api(url, options = {}) {
+      const opts = {
+        headers: { "Content-Type": "application/json", ...(options.headers || {}) },
+        ...options,
+      };
+      const response = await fetch(url, opts);
+      const contentType = response.headers.get("content-type") || "";
+      const payload = contentType.includes("application/json") ? await response.json() : await response.text();
+      if (!response.ok) {
+        const detail = typeof payload === "string" ? payload : payload?.detail || JSON.stringify(payload);
+        throw new Error(detail || `HTTP ${response.status}`);
+      }
+      return payload;
+    }
+
+    async function cerrarSesion() {
+      try {
+        if (tokenSesion) {
+          await fetch(`/api/logout?token=${encodeURIComponent(tokenSesion)}`, { method: "POST" });
+        }
+      } catch (_) {
+        // Ignorado: igual forzamos redireccion al login.
+      }
+      window.location.href = "/?form=login&next=tecnicos";
+    }
+
+    async function validarSesionActiva() {
+      if (!tokenSesion) {
+        window.location.href = "/?form=login&next=tecnicos";
+        return false;
+      }
+      try {
+        const data = await api(`/api/usuario-actual?token=${encodeURIComponent(tokenSesion)}`);
+        const usuario = String(data?.usuario || "").trim();
+        if (!usuario || usuario === "Desconocido") {
+          alert("Tu sesion expiro. Debes iniciar sesion nuevamente.");
+          window.location.href = "/?form=login&next=tecnicos";
+          return false;
+        }
+        document.getElementById("sesionInfo").textContent = `${usuario}`;
+        return true;
+      } catch (_) {
+        alert("No se pudo validar la sesion. Vuelve a iniciar sesion.");
+        window.location.href = "/?form=login&next=tecnicos";
+        return false;
+      }
+    }
+
+    function llenarDatalist(id, valores) {
+      const datalist = document.getElementById(id);
+      if (!datalist) return;
+      datalist.innerHTML = "";
+      if (!Array.isArray(valores)) return;
+      valores.forEach((valor) => {
+        const opt = document.createElement("option");
+        opt.value = valor;
+        datalist.appendChild(opt);
+      });
+    }
+
+    function toRegistrosTecnico(incidencias) {
+      return (Array.isArray(incidencias) ? incidencias : [])
+        .filter((fila) => {
+          const derivacion = normalizarTexto(fila?.[5] || "");
+          const estado = estadoCanonico(fila?.[8] || "");
+          const esTerminado =
+            estado === "Terminado" ||
+            derivacion.includes("finalizado") ||
+            derivacion.includes("terminado") ||
+            derivacion.includes("repetida");
+          if (!derivacion.includes("servicio tecnico") && !esTerminado) return false;
+          if (!tecnicoFiltrado) return true;
+          const asignados = normalizarTexto(`${fila?.[7] || ""} ${fila?.[10] || ""} ${fila?.[6] || ""}`);
+          return asignados.includes(tecnicoFiltrado);
+        })
+        .map((fila) => [
+          fila?.[0] || "", // ODT
+          fila?.[1] || "", // Fecha
+          fila?.[3] || "", // Cliente/Sucursal
+          fila?.[4] || "", // Servicio
+          detalleCompletoDesdeFila(fila), // Detalle completo (operaciones + soporte + servicio)
+          estadoCanonico(fila?.[8] || ""), // Estado
+          fila?.[12] || "", // Prioridad
+        ]);
+    }
+
+    async function cargarTablaPrincipal() {
+      const tecnicoQ = tecnicoActual ? `?tecnico=${encodeURIComponent(tecnicoActual)}` : "";
+      const incidencias = await api(`/api/incidencias/puesto${tecnicoQ}`);
+      const todos = toRegistrosTecnico(incidencias);
+      cargarRegistrosEnTabla(todos);
+      cantidadRegistrosActual = todos.length;
+    }
+
+    window.onload = async function () {
+      const cargaInicial = document.getElementById("pantallaCargaInicial");
+      const mensajeCarga = document.getElementById("mensajeCarga");
+
+      const sesionOk = await validarSesionActiva();
+      if (!sesionOk) return;
+
+      if (typeof tecnicoActual !== "undefined" && tecnicoActual) {
+        mensajeCarga.textContent = `Cargando tabla de ${tecnicoActual}...`;
+      }
+
+      try {
+        await cargarTablaPrincipal();
+        const listas = await api("/api/listas/bbdd");
+        listasGlobales = listas || {};
+        llenarDatalist("listaClientes", listasGlobales.clientes || listasGlobales.sucursales || []);
+        llenarDatalist("listaProblemas", listasGlobales.problemas || []);
+        llenarDatalist("listaEstados", listasGlobales.estados || ["Pendiente", "En Proceso", "Terminado"]);
+        llenarDatalist("listaTecnicos", listasGlobales.tecnicos || []);
+      } catch (err) {
+        alert(`Error cargando tecnicos: ${err.message}`);
+      } finally {
+        if (cargaInicial) {
+          setTimeout(() => {
+            cargaInicial.style.display = "none";
+          }, 400);
+        }
+      }
+
+      // If there was an open detail, re-open it after the table refresh
+      if (odtToReopen && clienteToReopen) {
+        await mostrarInfoSucursal(clienteToReopen, '', reopenedEstado, '', odtToReopen);
+      }
+
+      iniciarActualizacionAutomatica();
+    };
+
+    function cargarRegistrosEnTabla(registros) {
+      const contenedor = document.getElementById("registrosExistentes");
+      contenedor.innerHTML = "";
+
+      const registrosFiltrados = (Array.isArray(registros) ? registros : []).filter((fila) => {
+        const codigoODT = String(fila?.[0] || "");
+        return /^[MVIS]/i.test(codigoODT);
+      });
+
+      registrosFiltrados.sort((a, b) => {
+        const prioA = parseInt(a?.[6], 10);
+        const prioB = parseInt(b?.[6], 10);
+        const pa = Number.isFinite(prioA) ? prioA : 999;
+        const pb = Number.isFinite(prioB) ? prioB : 999;
+        return pa - pb;
+      });
+
+      const encabezados = ["ODT", "Fecha", "Cliente", "Servicio", "Detalle", "Estado", "Prioridad"];
+
+      registrosFiltrados.forEach((fila) => {
+        const tr = document.createElement("tr");
+        const nuevoOrden = [fila?.[0] || "", fila?.[1] || "", fila?.[2] || "", fila?.[3] || "", fila?.[4] || "", fila?.[5] || "", fila?.[6] || ""];
+
+        nuevoOrden.forEach((valor, i) => {
+          const td = document.createElement("td");
+          td.setAttribute("data-label", encabezados[i]);
+
+          if (i === 0) {
+            const odtLink = document.createElement("span");
+            odtLink.textContent = valor;
+            odtLink.className = "cliente-link";
+
+            const clienteRelacionado = nuevoOrden[2];
+            const estado = nuevoOrden[5];
+
+            const detalleOdt = nuevoOrden[4] || "";
+            odtLink.onclick = () => toggleInfoSucursal(tr, clienteRelacionado, detalleOdt, estado, valor);
+            td.appendChild(odtLink);
+          } else {
+            if (i === 4) {
+              const resumen = resumenDetalleTabla(valor);
+              td.innerHTML = `<div class="detalle-resumen">${escapeHTML(resumen)}</div>`;
+              td.title = String(valor || "");
+            } else {
+              td.textContent = valor;
+            }
+            if (i === 4) {
+              td.style.textAlign = "left";
+            }
+          }
+
+          tr.appendChild(td);
+        });
+
+        contenedor.appendChild(tr);
+      });
+
+      filtrarPorEstado();
+    }
+
+    function filtrarPorEstado() {
+      const filtro = document.getElementById("filtroEstado").value;
+      const filas = document.querySelectorAll("#registrosExistentes tr");
+      filas.forEach((fila) => {
+        const textoEstado = estadoCanonico(fila.children[5]?.textContent?.trim());
+        fila.style.display = (filtro === "Todos" || textoEstado === filtro) ? "" : "none";
+      });
+    }
+
+    function agregarOtroArchivo() {
+      const contenedorFotos = document.getElementById("contenedorFotos");
+      const inputsActuales = contenedorFotos.querySelectorAll(".fotoAdjuntar");
+
+      if (inputsActuales.length >= 2) {
+        alert("Solo se pueden adjuntar hasta 2 fotos.");
+        return;
+      }
+
+      const nuevoArchivo = document.createElement("input");
+      nuevoArchivo.type = "file";
+      nuevoArchivo.classList.add("fotoAdjuntar");
+      nuevoArchivo.required = true;
+      contenedorFotos.appendChild(nuevoArchivo);
+    }
+
+    function toggleInfoSucursal(filaActiva, cliente, observacion = "", estado = "", odt = "") {
+      if (!filaActiva) return;
+      const siguiente = filaActiva.nextElementSibling;
+      const odtActual = String(odt || "").trim();
+      if (
+        siguiente &&
+        siguiente.classList.contains("fila-infoSucursal") &&
+        String(siguiente.dataset.odt || "").trim() === odtActual
+      ) {
+        siguiente.remove();
+        odtToReopen = "";
+        clienteToReopen = "";
+        reopenedEstado = "";
+        if (currentODT === odtActual) {
+          currentODT = "";
+          clienteActivo = null;
+        }
+        return;
+      }
+      mostrarInfoSucursal(cliente, observacion, estado, "", odt);
+    }
+
+    async function mostrarInfoSucursal(cliente, observacion = "", estado = "", fechaCierre = "", odt = "") {
+      const filas = document.querySelectorAll("#registrosExistentes tr");
+      document.querySelectorAll(".fila-infoSucursal").forEach((div) => div.remove());
+
+      let filaActiva = null;
+      filas.forEach((fila) => {
+        const odtTexto = fila.children[0]?.textContent?.trim();
+        if (odtTexto === odt) filaActiva = fila;
+      });
+      if (!filaActiva) return;
+
+      currentODT = odt;
+      clienteActivo = cliente;
+      odtToReopen = String(odt || "").trim();
+      clienteToReopen = String(cliente || "").trim();
+      reopenedEstado = String(estado || "").trim();
+
+      const loadingRow = document.createElement("tr");
+      loadingRow.className = "fila-infoSucursal";
+      const loadingTd = document.createElement("td");
+      loadingTd.colSpan = 7;
+      loadingTd.innerHTML =
+        '<div class="infoSucursal infoSucursal-cargando" style="display:flex;flex-direction:column;justify-content:center;align-items:center;width:100%;font-style:italic;">' +
+          '<div class="loader" style="margin-bottom:10px;"></div>' +
+          '<div>Cargando detalles de la sucursal...</div>' +
+        '</div>';
+      loadingRow.appendChild(loadingTd);
+      filaActiva.insertAdjacentElement("afterend", loadingRow);
+
+      try {
+        const [detalleSucursal, incidencias, imagenesTablaResp] = await Promise.all([
+          api(`/api/sucursal/detalle?odt=${encodeURIComponent(odt)}`),
+          api(`/api/sucursal/incidencias?cliente=${encodeURIComponent(cliente)}`),
+          api(`/api/incidencias/imagenes-tabla?odt=${encodeURIComponent(odt)}`),
+        ]);
+        const imagenes = Array.isArray(imagenesTablaResp?.imagenes)
+          ? imagenesTablaResp.imagenes
+          : [];
+        const sucursalData = { ...(detalleSucursal || {}) };
+
+        if ((!sucursalData.latitud || !sucursalData.longitud) && sucursalData.direccion) {
+          const geocliente = await geocodificarDireccionCliente(sucursalData.direccion);
+          if (geocliente.latitud && geocliente.longitud) {
+            sucursalData.latitud = geocliente.latitud;
+            sucursalData.longitud = geocliente.longitud;
+          }
+        }
+
+        const infoBox = document.createElement("tr");
+        infoBox.className = "fila-infoSucursal";
+        infoBox.dataset.odt = String(odt || "").trim();
+
+        const td = document.createElement("td");
+        td.colSpan = 7;
+
+        let html = "";
+        html += '<div class="infoSucursal fade-in">';
+        const detalleHtml = detalleCompletoHTML(observacion);
+        if (detalleHtml) {
+          html += '<h4>Detalle Completo ODT</h4>';
+          html += `<div class="odt-detalle-completo">${detalleHtml}</div>`;
+        }
+        html += '<h4>Detalles de la Sucursal</h4>';
+        html += `<p><strong>Direccion:</strong> ${escapeHTML(sucursalData?.direccion || "No disponible")}</p>`;
+        const contactoDetalle = [sucursalData?.contacto || "", sucursalData?.telefono || ""].filter(Boolean).join(" - ");
+        html += `<p><strong>Contacto:</strong> ${escapeHTML(contactoDetalle || "No disponible")}</p>`;
+        html += `<p><strong>Correo:</strong> ${escapeHTML(sucursalData?.correo || "No disponible")}</p>`;
+
+        if (sucursalData?.latitud && sucursalData?.longitud) {
+          html += `<p><strong>Latitud y Longitud:</strong> ${escapeHTML(sucursalData.latitud)}, ${escapeHTML(sucursalData.longitud)}<br>` +
+                  `<a href="https://www.google.com/maps?q=${encodeURIComponent(sucursalData.latitud)},${encodeURIComponent(sucursalData.longitud)}" target="_blank">Ver en Google Maps</a> | ` +
+                  `<a href="https://waze.com/ul?ll=${encodeURIComponent(sucursalData.latitud)},${encodeURIComponent(sucursalData.longitud)}&navigate=yes" target="_blank">Ir con Waze</a></p>`;
+        } else {
+          const linksDir = construirLinksNavegacionPorDireccion(sucursalData?.direccion || "", cliente);
+          if (linksDir.google || linksDir.waze) {
+            html += `<p><strong>Latitud y Longitud:</strong> No disponible<br>` +
+                    `<a href="${escapeHTML(linksDir.google)}" target="_blank">Buscar dirección en Google Maps</a> | ` +
+                    `<a href="${escapeHTML(linksDir.waze)}" target="_blank">Buscar dirección en Waze</a></p>`;
+          } else {
+            html += "<p><strong>Latitud y Longitud:</strong> No disponible</p>";
+          }
+        }
+
+        if (sucursalData?.layout) {
+          html += `<p><strong>Layout:</strong> <a href="${escapeHTML(sucursalData.layout)}" target="_blank">Ver Layout</a></p>`;
+        } else {
+          html += "<p><strong>Layout:</strong> No disponible</p>";
+        }
+
+        html += '<h4 class="hdr-incidencias">Historial de Incidencias</h4>';
+        html += '<div class="historial-incidencias" style="display:none;">';
+
+        const incidenciasVisibles = 5;
+        const incidenciasFiltradas = (Array.isArray(incidencias) ? incidencias : []).filter((inc) => {
+          const tipo = normalizarTexto(inc?.problema || "");
+          return !tipo.includes("mantencion") && !tipo.includes("mantención");
+        });
+
+        if (!incidenciasFiltradas.length) {
+          html += '<p class="info-vacio">No hay incidencias relevantes</p>';
+        } else {
+          html += `<ul class="lista-incidencias" data-total="${incidenciasFiltradas.length}">`;
+
+          incidenciasFiltradas.forEach((inc, index) => {
+            const visible = index >= incidenciasFiltradas.length - incidenciasVisibles ? "block" : "none";
+            const fecha = inc?.fecha || "Sin fecha";
+            const problema = inc?.problema || "";
+            const obs = inc?.texto || "";
+
+            html += `<li class="inc-item" style="display:${visible};">` +
+                    '<div class="inc-row">' +
+                    `<span class="inc-fecha">Fecha: ${escapeHTML(fecha)}</span>` +
+                    (problema ? `<span class="inc-problema">- ${escapeHTML(problema)}</span>` : "") +
+                    "</div>" +
+                    `<div class="inc-obs">${escapeHTML(obs)}</div>` +
+                    "</li>";
+          });
+
+          html += "</ul>";
+          if (incidenciasFiltradas.length > incidenciasVisibles) {
+            html += '<div style="text-align:center;margin-top:10px;"><button class="btn-ver-mas" onclick="verMasIncidencias(this)">Ver mas</button></div>';
+          }
+        }
+
+        html += "</div>";
+
+        if (Array.isArray(imagenes) && imagenes.length > 0) {
+          html += '<div style="margin-top:15px;">';
+          html += '<p><strong>Imagenes Incidencia</strong></p>';
+          html += '<div class="imagenes-lista">';
+          imagenes.forEach((url, idx) => {
+            html += `<div class="imagen-item"><a href="${escapeHTML(url)}" target="_blank">Imagen ${idx + 1}</a></div>`;
+          });
+          html += "</div></div>";
+        }
+        html += '<div class="action-buttons">' +
+                '<button id="btnEnProcesoSucursal" onclick="marcarEnProceso()">Pendiente</button>' +
+                '<button id="btnFinalizarSucursal" class="btn-primario" onclick="abrirModalFinalizar()">Finalizar</button>' +
+                '<button onclick="abrirFormularioRendicionPorODT(currentODT)">Rendicion Gastos</button>' +
+                '</div>';
+        html += "</div>";
+
+        td.innerHTML = html;
+        infoBox.appendChild(td);
+        loadingRow.replaceWith(infoBox);
+
+        const header = infoBox.querySelector(".hdr-incidencias");
+        if (header) {
+          header.addEventListener("click", () => {
+            const cont = header.nextElementSibling;
+            if (!cont) return;
+            cont.style.display = (cont.style.display === "none" || cont.style.display === "") ? "block" : "none";
+          });
+        }
+
+        const btnFinalizar = infoBox.querySelector("#btnFinalizarSucursal");
+        if (estadoCanonico(estado) === "Terminado" && btnFinalizar) {
+          btnFinalizar.textContent = "Finalizado";
+          btnFinalizar.disabled = true;
+          btnFinalizar.style.backgroundColor = "#2ecc71";
+          btnFinalizar.style.cursor = "not-allowed";
+        }
+      } catch (err) {
+        loadingTd.innerHTML = `<div class="infoSucursal info-error">Error cargando detalles: ${escapeHTML(err.message)}</div>`;
+      }
+    }
+
+    function verMasIncidencias(btn) {
+      const contenedor = btn.closest(".infoSucursal");
+      const items = contenedor ? contenedor.querySelectorAll(".inc-item") : [];
+      let mostradas = 0;
+
+      items.forEach((item) => {
+        if (item.style.display === "none" && mostradas < 5) {
+          item.style.display = "block";
+          mostradas += 1;
+        }
+      });
+
+      const quedanOcultas = Array.from(items).some((item) => item.style.display === "none");
+      if (!quedanOcultas) btn.style.display = "none";
+    }
+
+    function abrirModalFinalizar() {
+      const modal = document.getElementById("modalFinalizar");
+      if (modal) modal.style.display = "flex";
+    }
+
+    function cerrarModalFinalizar() {
+      const modal = document.getElementById("modalFinalizar");
+      if (!modal) return;
+      modal.style.display = "none";
+    }
+
+    async function guardarYFinalizar() {
+      const btnGuardar = document.querySelector("#modalFinalizar button:last-of-type");
+      const inputsArchivos = document.querySelectorAll(".fotoAdjuntar");
+      const observacion = document.getElementById("observacion").value.trim();
+      const modal = document.getElementById("modalProgreso");
+      const estado = document.getElementById("mensajeEstado");
+
+      const fotosBase64 = [];
+      let leidos = 0;
+      let totalArchivos = 0;
+
+      inputsArchivos.forEach((input) => {
+        totalArchivos += input.files.length;
+      });
+
+      if (totalArchivos < 1) {
+        alert("Debes adjuntar al menos UNA foto para cerrar la ODT.");
+        return;
+      }
+
+      if (totalArchivos > 2) {
+        alert("Solo se permiten HASTA DOS fotos para cerrar la ODT.");
+        return;
+      }
+
+      if (!observacion) {
+        alert("Debes ingresar una observacion.");
+        return;
+      }
+
+      btnGuardar.disabled = true;
+      btnGuardar.textContent = "Guardando...";
+      modal.style.display = "flex";
+      estado.textContent = "Enviando solicitud...";
+
+      try {
+        await api("/api/incidencias/cerrar", {
+          method: "POST",
+          body: JSON.stringify({ odt: currentODT, observacion }),
+        });
+
+        estado.textContent = "Procesando fotos...";
+
+        await new Promise((resolve, reject) => {
+          inputsArchivos.forEach((input) => {
+            Array.from(input.files).forEach((archivo) => {
+              const reader = new FileReader();
+              reader.onload = (event) => {
+                fotosBase64.push(event.target.result);
+                leidos += 1;
+                if (leidos === totalArchivos) resolve();
+              };
+              reader.onerror = () => reject(new Error("No se pudo leer una imagen"));
+              reader.readAsDataURL(archivo);
+            });
+          });
+        });
+
+        estado.textContent = "Guardando imagenes...";
+        const cierreResp = await api("/api/incidencias/finalizar-completo", {
+          method: "POST",
+          body: JSON.stringify({ odt: currentODT, observacion, fotosBase64 }),
+        });
+
+        if (cierreResp?.drive_enabled && cierreResp?.drive_ok === false) {
+          const msg = cierreResp?.drive_error || "No se pudo generar informe en Drive.";
+          alert(`ODT cerrada, pero fallo Drive: ${msg}`);
+        }
+        if (cierreResp?.drive_queued) {
+          estado.textContent = "ODT cerrada. Informe generandose en segundo plano.";
+        } else {
+          estado.textContent = "Finalizacion enviada con exito.";
+        }
+
+        btnGuardar.textContent = "Guardar y Finalizar";
+        btnGuardar.disabled = false;
+        cerrarModalFinalizar();
+        document.getElementById("observacion").value = "";
+        document.getElementById("contenedorFotos").innerHTML = '<input type="file" class="fotoAdjuntar" required />';
+
+        setTimeout(async () => {
+          modal.style.display = "none";
+          await cargarTablaPrincipal();
+        }, 700);
+      } catch (err) {
+        modal.style.display = "none";
+        btnGuardar.disabled = false;
+        btnGuardar.textContent = "Guardar y Finalizar";
+        alert(`Error al finalizar: ${err.message}`);
+      }
+    }
+
+    function marcarEnProceso() {
+      if (!currentODT) {
+        alert("No hay ODT activa.");
+        return;
+      }
+      const modal = document.getElementById("modalEnProceso");
+      if (modal) {
+        document.getElementById("gradoAvance").value = "";
+        document.getElementById("observacionEnProceso").value = "";
+        modal.style.display = "flex";
+      }
+    }
+
+    function cerrarModalEnProceso() {
+      const modal = document.getElementById("modalEnProceso");
+      if (!modal) return;
+      modal.style.display = "none";
+    }
+
+    async function guardarEstadoEnProceso() {
+      const avance = document.getElementById("gradoAvance").value.trim();
+      const obs = document.getElementById("observacionEnProceso").value.trim();
+
+      if (!avance || Number.isNaN(Number(avance)) || Number(avance) < 0 || Number(avance) > 100) {
+        alert("Ingresa un grado de avance valido entre 0 y 100.");
+        return;
+      }
+
+      if (!obs) {
+        alert("Debes ingresar una observacion.");
+        return;
+      }
+
+      try {
+        await api("/api/incidencias/en-proceso", {
+          method: "POST",
+          body: JSON.stringify({
+            odt: currentODT,
+            avance: Number(avance),
+            observacion: obs,
+            token: tokenSesion || "",
+          }),
+        });
+        cerrarModalEnProceso();
+        await cargarTablaPrincipal();
+      } catch (err) {
+        alert(`Error guardando En Proceso: ${err.message}`);
+      }
+    }
+
+    async function abrirFormularioRendicionPorODT(odt) {
+      const cliente = clienteActivo || "";
+      const tecnico = tecnicoActual || "";
+
+      if (!odt || !cliente || !tecnico) {
+        alert("No se puede abrir el formulario. Faltan datos.");
+        return;
+      }
+
+      try {
+        const qToken = tokenSesion ? `&token=${encodeURIComponent(tokenSesion)}` : "";
+        const url = `/?form=formularioViatico` +
+                    `&odt=${encodeURIComponent(odt)}` +
+                    `&tecnico=${encodeURIComponent(tecnico)}` +
+                    `&cliente=${encodeURIComponent(cliente)}` +
+                    qToken;
+
+        window.open(url, "_blank");
+      } catch (err) {
+        alert(`No se pudo abrir rendicion: ${err.message}`);
+      }
+    }
+
+    function abrirBandejaRendiciones() {
+      const q = tokenSesion ? `&token=${encodeURIComponent(tokenSesion)}` : "";
+      window.location.href = `/?form=rendicionesTecnico${q}`;
+    }
+
+    function iniciarActualizacionAutomatica() {
+      setInterval(async () => {
+        const ok = await validarSesionActiva();
+        if (!ok) return;
+        try {
+          await cargarTablaPrincipal();
+        } catch (_) {
+          // Silencioso para no interrumpir a tecnico.
+        }
+      }, 30000);
+    }
+
+    document.addEventListener("click", (event) => {
+      const modalFinalizar = document.getElementById("modalFinalizar");
+      const modalEnProceso = document.getElementById("modalEnProceso");
+      if (event.target === modalFinalizar) {
+        cerrarModalFinalizar();
+      } else if (event.target === modalEnProceso) {
+        cerrarModalEnProceso();
+      }
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key !== "Escape") return;
+      const modalFinalizar = document.getElementById("modalFinalizar");
+      const modalEnProceso = document.getElementById("modalEnProceso");
+      if (modalFinalizar && modalFinalizar.style.display === "flex") {
+        cerrarModalFinalizar();
+        return;
+      }
+      if (modalEnProceso && modalEnProceso.style.display === "flex") {
+        cerrarModalEnProceso();
+      }
+    });
+
+    function initMap() {}
+  </script>
+</body>
+</html>

@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Encuesta de Satisfaccion ATC</title>
+  <style>
+    :root{
+      --bg:#eef3fb;
+      --card:#ffffff;
+      --ink:#12233f;
+      --muted:#5e708c;
+      --line:#d7e1f0;
+      --brand:#16388b;
+      --brand-2:#2f60df;
+      --soft:#f8fbff;
+      --success:#166534;
+      --success-bg:#dcfce7;
+      --danger:#991b1b;
+      --danger-bg:#fee2e2;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Arial,sans-serif;
+      color:var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(59,130,246,.10), transparent 28%),
+        linear-gradient(180deg, #f7faff 0%, var(--bg) 100%);
+      min-height:100vh;
+    }
+    .page{
+      max-width:760px;
+      margin:0 auto;
+      padding:28px 18px 40px;
+    }
+    .card{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:28px;
+      overflow:hidden;
+      box-shadow:0 28px 70px rgba(18,35,63,.12);
+    }
+    .hero{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:20px;
+      padding:30px;
+      color:#fff;
+      background:linear-gradient(135deg, var(--brand) 0%, var(--brand-2) 100%);
+    }
+    .eyebrow{
+      margin:0 0 10px;
+      font-size:12px;
+      letter-spacing:.16em;
+      text-transform:uppercase;
+      opacity:.86;
+    }
+    .hero h1{
+      margin:0 0 10px;
+      font-size:42px;
+      line-height:1.02;
+    }
+    .hero p{
+      margin:0;
+      opacity:.92;
+      font-size:18px;
+    }
+    .hero img{
+      width:126px;
+      height:auto;
+      object-fit:contain;
+      filter:drop-shadow(0 12px 18px rgba(0,0,0,.16));
+    }
+    .body{
+      padding:30px;
+    }
+    .lead{
+      margin:0 0 16px;
+      line-height:1.8;
+      font-size:18px;
+    }
+    .panel{
+      margin-top:18px;
+      padding:24px;
+      border:1px solid var(--line);
+      border-radius:24px;
+      background:var(--soft);
+    }
+    .panel h2{
+      margin:0 0 12px;
+      font-size:26px;
+      line-height:1.2;
+    }
+    .panel p{
+      margin:0 0 18px;
+      color:var(--muted);
+      line-height:1.7;
+    }
+    .face-grid{
+      display:flex;
+      flex-wrap:wrap;
+      gap:12px;
+    }
+    .face-input{
+      position:absolute;
+      opacity:0;
+      pointer-events:none;
+    }
+    .face-option{
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      width:74px;
+      cursor:pointer;
+      text-decoration:none;
+      color:var(--ink);
+    }
+    .face-bubble{
+      width:74px;
+      height:74px;
+      border-radius:22px;
+      border:1px solid var(--line);
+      background:#fff;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:34px;
+      transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+    }
+    .face-option small{
+      margin-top:8px;
+      color:var(--muted);
+      font-size:13px;
+    }
+    .face-option:hover .face-bubble{
+      transform:translateY(-2px);
+      box-shadow:0 16px 32px rgba(18,35,63,.10);
+    }
+    .face-input:checked + .face-option .face-bubble{
+      border-color:#60a5fa;
+      box-shadow:0 0 0 5px rgba(96,165,250,.18);
+      transform:translateY(-2px);
+    }
+    .choice-row{
+      display:flex;
+      flex-wrap:wrap;
+      gap:12px;
+    }
+    .choice-input{
+      position:absolute;
+      opacity:0;
+      pointer-events:none;
+    }
+    .choice-label{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-width:110px;
+      padding:15px 18px;
+      border-radius:16px;
+      border:1px solid var(--line);
+      background:#fff;
+      font-weight:700;
+      cursor:pointer;
+      transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+    }
+    .choice-label:hover{
+      transform:translateY(-2px);
+      box-shadow:0 16px 30px rgba(18,35,63,.10);
+    }
+    .choice-input[value="Si"]:checked + .choice-label{
+      border-color:#86efac;
+      background:var(--success-bg);
+      color:var(--success);
+    }
+    .choice-input[value="No"]:checked + .choice-label{
+      border-color:#fca5a5;
+      background:var(--danger-bg);
+      color:var(--danger);
+    }
+    .actions{
+      display:flex;
+      flex-wrap:wrap;
+      gap:14px;
+      align-items:center;
+      margin-top:28px;
+    }
+    button{
+      border:0;
+      border-radius:16px;
+      background:linear-gradient(135deg, var(--brand) 0%, var(--brand-2) 100%);
+      color:#fff;
+      padding:16px 24px;
+      font-size:16px;
+      font-weight:700;
+      cursor:pointer;
+      box-shadow:0 16px 30px rgba(29,78,216,.24);
+    }
+    button:disabled{
+      opacity:.6;
+      cursor:progress;
+    }
+    .status{
+      display:none;
+      padding:16px 18px;
+      border-radius:18px;
+      line-height:1.7;
+      font-size:15px;
+    }
+    .status.show{display:block}
+    .status.success{
+      background:var(--success-bg);
+      color:var(--success);
+      border:1px solid #86efac;
+    }
+    .status.error{
+      background:var(--danger-bg);
+      color:var(--danger);
+      border:1px solid #fca5a5;
+    }
+    .foot{
+      margin-top:24px;
+      color:var(--muted);
+      line-height:1.7;
+      font-size:14px;
+    }
+    .hidden{
+      display:none !important;
+    }
+    @media (max-width:640px){
+      .hero{
+        flex-direction:column;
+      }
+      .hero h1{
+        font-size:34px;
+      }
+      .hero img{
+        width:108px;
+      }
+      .body{
+        padding:22px;
+      }
+      .panel{
+        padding:18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="card">
+      <header class="hero">
+        <div>
+          <p class="eyebrow">Soporte ATC</p>
+          <h1>Encuesta de satisfaccion</h1>
+          <p id="ticketLabel">Ticket</p>
+        </div>
+        <img src="/static/img/logo-atc.png" alt="ATC">
+      </header>
+
+      <div class="body">
+        <p class="lead" id="helloText">Hola,</p>
+        <p class="lead">Gracias por dedicar unos segundos a esta encuesta. Su opinion es muy importante para nosotros y nos ayuda a mejorar cada experiencia de soporte.</p>
+
+        <form id="surveyForm" novalidate>
+          <input type="hidden" name="_subject" id="subjectField" value="Encuesta SLA ATC">
+          <input type="hidden" name="_captcha" value="false">
+          <input type="hidden" name="_template" value="table">
+          <input type="hidden" name="ticket_id" id="ticketIdField" value="">
+          <input type="hidden" name="cliente" id="clientField" value="">
+          <input type="text" name="_honey" class="hidden" tabindex="-1" autocomplete="off">
+
+          <section class="panel">
+            <h2>1. La atencion del tecnico fue buena</h2>
+            <p>Seleccione la cara que mejor represente su experiencia.</p>
+            <div class="face-grid">
+              <label>
+                <input class="face-input" type="radio" name="atencion_tecnico" value="1 - Muy enojado" required>
+                <span class="face-option">
+                  <span class="face-bubble">😡</span>
+                  <small>1</small>
+                </span>
+              </label>
+              <label>
+                <input class="face-input" type="radio" name="atencion_tecnico" value="2 - Enojado" required>
+                <span class="face-option">
+                  <span class="face-bubble">🙁</span>
+                  <small>2</small>
+                </span>
+              </label>
+              <label>
+                <input class="face-input" type="radio" name="atencion_tecnico" value="3 - Serio" required>
+                <span class="face-option">
+                  <span class="face-bubble">😐</span>
+                  <small>3</small>
+                </span>
+              </label>
+              <label>
+                <input class="face-input" type="radio" name="atencion_tecnico" value="4 - Feliz" required>
+                <span class="face-option">
+                  <span class="face-bubble">🙂</span>
+                  <small>4</small>
+                </span>
+              </label>
+              <label>
+                <input class="face-input" type="radio" name="atencion_tecnico" value="5 - Muy feliz" required>
+                <span class="face-option">
+                  <span class="face-bubble">😁</span>
+                  <small>5</small>
+                </span>
+              </label>
+            </div>
+          </section>
+
+          <section class="panel">
+            <h2>2. El tiempo de resolucion le parecio satisfactorio</h2>
+            <p>Seleccione la opcion que mejor describa su experiencia.</p>
+            <div class="choice-row">
+              <label>
+                <input class="choice-input" type="radio" name="tiempo_resolucion" value="Si" required>
+                <span class="choice-label">Si</span>
+              </label>
+              <label>
+                <input class="choice-input" type="radio" name="tiempo_resolucion" value="No" required>
+                <span class="choice-label">No</span>
+              </label>
+            </div>
+          </section>
+
+          <div class="actions">
+            <button type="submit" id="submitBtn">Enviar Respuesta</button>
+          </div>
+        </form>
+
+        <div id="successBox" class="status success">
+          Su respuesta fue enviada correctamente. Gracias por ser parte de ATC.
+        </div>
+        <div id="errorBox" class="status error">
+          No pudimos enviar la respuesta en este momento. Intente nuevamente en unos minutos.
+        </div>
+
+        <p class="foot">Si prefiere, tambien puede responder esta encuesta contactando a <strong>soporte@soporteatc.cl</strong>.</p>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const SUPPORT_EMAIL = "soporte@soporteatc.cl";
+    const form = document.getElementById("surveyForm");
+    const submitBtn = document.getElementById("submitBtn");
+    const successBox = document.getElementById("successBox");
+    const errorBox = document.getElementById("errorBox");
+    const helloText = document.getElementById("helloText");
+    const ticketLabel = document.getElementById("ticketLabel");
+    const ticketIdField = document.getElementById("ticketIdField");
+    const clientField = document.getElementById("clientField");
+    const subjectField = document.getElementById("subjectField");
+
+    const params = new URLSearchParams(window.location.search);
+    const ticketId = (params.get("ticket_id") || "").trim();
+    const clientName = (params.get("name") || "Cliente").trim();
+
+    if (ticketId) {
+      ticketLabel.textContent = `Ticket #${ticketId}`;
+      ticketIdField.value = ticketId;
+      subjectField.value = `Encuesta SLA ATC - Ticket #${ticketId}`;
+    } else {
+      ticketLabel.textContent = "Encuesta ATC";
+      subjectField.value = "Encuesta SLA ATC";
+    }
+
+    helloText.textContent = `Hola ${clientName},`;
+    clientField.value = clientName;
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      successBox.classList.remove("show");
+      errorBox.classList.remove("show");
+
+      if (!form.reportValidity()) {
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Enviando...";
+
+      try {
+        const formData = new FormData(form);
+        const response = await fetch(`https://formsubmit.co/ajax/${encodeURIComponent(SUPPORT_EMAIL)}`, {
+          method: "POST",
+          headers: {
+            "Accept": "application/json"
+          },
+          body: formData
+        });
+
+        const payload = await response.json().catch(() => ({}));
+        if (!response.ok || (payload && payload.success === "false")) {
+          throw new Error("form_error");
+        }
+
+        form.reset();
+        successBox.classList.add("show");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      } catch (error) {
+        errorBox.classList.add("show");
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Enviar Respuesta";
+      }
+    });
+  </script>
+</body>
+</html>

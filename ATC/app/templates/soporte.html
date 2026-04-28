@@ -1,0 +1,2457 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <base target="_top">
+  <title>Incidencias Soporte Técnico</title>
+  <script src="/static/gas_adapter_soporte.js?v=20260414_2"></script>
+  <style>
+    :root {
+      --bg:
+        radial-gradient(1200px 500px at 12% 0%, rgba(37, 99, 235, 0.12), transparent 60%),
+        linear-gradient(180deg, #eef4ff 0%, #f8fbff 40%, #f4f7fb 100%);
+      --panel: rgba(255, 255, 255, 0.82);
+      --panel-strong: rgba(255, 255, 255, 0.96);
+      --text: #0f172a;
+      --muted: #64748b;
+      --border: rgba(148, 163, 184, 0.26);
+      --border-strong: rgba(148, 163, 184, 0.34);
+      --header-1: #20c46b;
+      --header-2: #18a957;
+      --header-filter: #13924a;
+      --shadow-lg: 0 22px 56px rgba(15, 23, 42, 0.12);
+      --shadow-md: 0 14px 34px rgba(15, 23, 42, 0.10);
+      --shadow-sm: 0 8px 20px rgba(15, 23, 42, 0.08);
+      --chip: rgba(37, 99, 235, 0.10);
+      --chip-border: rgba(37, 99, 235, 0.18);
+      --obs-bg: #eef3f8;
+      --obs-border: #d8e0ea;
+      --row-hover: rgba(37, 99, 235, 0.035);
+      --input-bg: rgba(255, 255, 255, 0.96);
+      --button-bg: linear-gradient(135deg, #1f2937, #111827);
+      --button-hover: linear-gradient(135deg, #0f172a, #020617);
+    }
+
+    body.dark-mode {
+      --bg:
+        radial-gradient(1100px 420px at 10% 0%, rgba(37, 99, 235, 0.18), transparent 55%),
+        linear-gradient(180deg, #08111f 0%, #0b1628 45%, #0d1729 100%);
+      --panel: rgba(15, 26, 46, 0.88);
+      --panel-strong: rgba(15, 26, 46, 0.96);
+      --text: #e5eefb;
+      --muted: #9fb1c8;
+      --border: rgba(148, 163, 184, 0.20);
+      --border-strong: rgba(148, 163, 184, 0.28);
+      --shadow-lg: 0 24px 60px rgba(2, 6, 23, 0.45);
+      --shadow-md: 0 16px 40px rgba(2, 6, 23, 0.34);
+      --shadow-sm: 0 10px 24px rgba(2, 6, 23, 0.28);
+      --chip: rgba(37, 99, 235, 0.18);
+      --chip-border: rgba(96, 165, 250, 0.28);
+      --obs-bg: rgba(17, 32, 56, 0.92);
+      --obs-border: rgba(148, 163, 184, 0.20);
+      --row-hover: rgba(96, 165, 250, 0.05);
+      --input-bg: rgba(9, 18, 33, 0.92);
+      --button-bg: linear-gradient(135deg, #2563eb, #1d4ed8);
+      --button-hover: linear-gradient(135deg, #1d4ed8, #1e40af);
+      color-scheme: dark;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Segoe UI", sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      padding: 28px;
+      transition: background .2s ease, color .2s ease;
+    }
+
+    .page-shell {
+      max-width: 1840px;
+      margin: 0 auto;
+    }
+
+    .page-topbar {
+      display: none;
+    }
+
+    .action-chip,
+    .volver-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+      padding: 0 16px;
+      border-radius: 10px;
+      border: 1px solid var(--border-strong);
+      background: var(--panel-strong);
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 700;
+      text-decoration: none;
+      box-shadow: var(--shadow-sm);
+      transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease, background .18s ease;
+      backdrop-filter: blur(10px);
+      cursor: pointer;
+    }
+
+    .action-chip:hover,
+    .volver-link:hover {
+      transform: translateY(-1px);
+      border-color: rgba(37, 99, 235, 0.30);
+      box-shadow: var(--shadow-md);
+    }
+
+    .page-hero {
+      display: grid;
+      grid-template-columns: 300px 1fr 300px;
+      align-items: center;
+      gap: 28px;
+      margin-bottom: 22px;
+      min-height: 92px;
+      padding: 18px 22px;
+      border-radius: 26px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-lg);
+      backdrop-filter: blur(14px);
+    }
+
+    .logo-atc {
+      width: 148px;
+      min-width: 148px;
+      height: auto;
+      border-radius: 14px;
+      background: transparent;
+      border: 0;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      box-shadow: none;
+      justify-self: start;
+    }
+
+    body.dark-mode .logo-atc {
+      background: transparent;
+      border-color: transparent;
+      box-shadow: none;
+    }
+
+    .logo-atc img {
+      width: 100%;
+      max-width: 136px;
+      height: auto;
+      display: block;
+      object-fit: contain;
+    }
+
+    .hero-copy {
+      min-width: 0;
+      text-align: center;
+      justify-self: center;
+      width: 100%;
+    }
+
+    .titulo-central {
+      margin: 0;
+      font-size: clamp(28px, 3vw, 42px);
+      line-height: 1.05;
+      font-weight: 800;
+      letter-spacing: .2px;
+      color: var(--text);
+    }
+
+    .hero-subtitle {
+      margin: 8px 0 0;
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .session-card {
+      min-width: 300px;
+      width: max-content;
+      margin-left: auto;
+      padding: 0;
+      border-radius: 0;
+      border: 0;
+      background: transparent;
+      box-shadow: none;
+      backdrop-filter: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      align-items: flex-end;
+      justify-self: end;
+    }
+
+    .session-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      width: 100%;
+    }
+
+    .session-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      align-items: flex-end;
+      text-align: right;
+      width: 100%;
+    }
+
+    .session-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    #usuarioActual {
+      margin: 0;
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .table-shell {
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      background: var(--panel);
+      box-shadow: var(--shadow-md);
+      backdrop-filter: blur(16px);
+      overflow: hidden;
+    }
+
+    .table-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 18px 20px 14px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .table-title-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .table-title {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .table-subtitle {
+      margin: 0;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .tabla-scroll-container {
+      max-height: none;
+      overflow: visible;
+      border-radius: 0 0 16px 16px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: transparent;
+      table-layout: fixed;
+      font-size: 13px;
+      --sticky-header-height: 54px;
+      --sticky-filter-height: 52px;
+    }
+    #tablaRegistro col.col-odt { width: 5%; }
+    #tablaRegistro col.col-fecha { width: 7%; }
+    #tablaRegistro col.col-cliente { width: 10.5%; }
+    #tablaRegistro col.col-problema { width: 10%; }
+    #tablaRegistro col.col-observacion { width: 20%; }
+    #tablaRegistro col.col-derivacion { width: 10%; }
+    #tablaRegistro col.col-tecnico { width: 8.5%; }
+    #tablaRegistro col.col-acompanante { width: 8.5%; }
+    #tablaRegistro col.col-estado { width: 7%; }
+    #tablaRegistro col.col-observacion-final { width: 6.5%; }
+    #tablaRegistro col.col-imagenes { width: 5%; }
+    th, td {
+      border: 1px solid var(--border);
+      padding: 10px 10px;
+      text-align: center;
+      color: var(--text);
+    }
+
+    thead th {
+      color: #fff;
+      position: sticky;
+      z-index: 2;
+      border-color: rgba(255,255,255,.18);
+    }
+
+    thead tr.encabezados th {
+      top: 0;
+      z-index: 5;
+      height: var(--sticky-header-height);
+      padding-top: 0;
+      padding-bottom: 0;
+      vertical-align: middle;
+      background: linear-gradient(135deg, var(--header-1), var(--header-2));
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: .02em;
+      text-transform: uppercase;
+    }
+
+    thead tr.filtros th {
+      top: var(--sticky-header-height);
+      z-index: 4;
+      background: var(--header-filter);
+      height: var(--sticky-filter-height);
+      padding: 0 8px;
+      border-top: 0;
+      vertical-align: middle;
+    }
+
+    thead tr.filtros input,
+    thead tr.filtros select {
+      width: 100%;
+      min-height: 36px;
+      font-size: 12px;
+      padding: 6px 10px;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,.22);
+      box-sizing: border-box;
+      color: var(--text);
+      background: var(--input-bg);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.06);
+    }
+
+    tbody tr {
+      background: transparent;
+      transition: background .18s ease;
+    }
+
+    tbody tr:hover {
+      background: var(--row-hover);
+    }
+
+    input,
+    textarea,
+    select {
+      width: 100%;
+      padding: 8px 10px;
+      box-sizing: border-box;
+      border: 1px solid var(--border-strong);
+      border-radius: 8px;
+      font-size: 13px;
+      background: var(--input-bg);
+      color: var(--text);
+      outline: none;
+      transition: border-color .18s ease, box-shadow .18s ease;
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+      border-color: rgba(37, 99, 235, 0.36);
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+    }
+
+    button {
+      padding: 10px 16px;
+      border: none;
+      border-radius: 9px;
+      cursor: pointer;
+      color: #fff;
+      background: var(--button-bg);
+      font-weight: 700;
+      box-shadow: var(--shadow-sm);
+      transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
+    }
+
+    button:hover {
+      background: var(--button-hover);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-md);
+    }
+
+    td a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 34px;
+      padding: 0 12px;
+      border-radius: 8px;
+      color: var(--text);
+      text-decoration: none;
+      background: var(--chip);
+      border: 1px solid var(--chip-border);
+      font-weight: 700;
+      font-size: 12px;
+    }
+
+    .tecnico-cell {
+      text-align: left;
+      line-height: 1.45;
+      white-space: pre-line;
+    }
+
+    .observacion-cell {
+      text-align: left;
+      line-height: 1.45;
+    }
+
+    .obs-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .obs-block {
+      background: var(--obs-bg);
+      border: 1px solid var(--obs-border);
+      border-radius: 8px;
+      padding: 9px 10px;
+      white-space: pre-wrap;
+      word-break: break-word;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.05);
+    }
+
+    .obs-contacto,
+    .obs-soporte,
+    .obs-servicio { background: var(--obs-bg); }
+
+    .obs-groups {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .obs-group {
+      border: 1px solid var(--obs-border);
+      border-radius: 10px;
+      background: var(--obs-bg);
+      overflow: hidden;
+    }
+
+    .obs-group-title {
+      padding: 6px 10px;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      color: var(--muted);
+      border-bottom: 1px solid var(--obs-border);
+      background: rgba(15, 23, 42, 0.08);
+    }
+
+    .obs-group-body {
+      padding: 8px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .obs-line {
+      white-space: pre-wrap;
+      word-break: break-word;
+      line-height: 1.4;
+    }
+
+    .obs-line-empty {
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    .obs-group-puestos .obs-group-title {
+      border-left: 3px solid #38bdf8;
+      padding-left: 8px;
+    }
+
+    .obs-group-soporte .obs-group-title {
+      border-left: 3px solid #22c55e;
+      padding-left: 8px;
+    }
+
+    .obs-group-servicio .obs-group-title {
+      border-left: 3px solid #f97316;
+      padding-left: 8px;
+    }
+
+    .observacion-editor {
+      background: linear-gradient(160deg, rgba(16, 28, 46, 0.96), rgba(10, 19, 34, 0.98)) !important;
+      color: #eaf1fb !important;
+      border: 1px solid rgba(96, 165, 250, 0.42) !important;
+      border-radius: 12px;
+      caret-color: #f8fafc;
+      padding: 12px;
+      line-height: 1.45;
+      box-shadow:
+        0 18px 44px rgba(2, 6, 23, 0.58),
+        inset 0 1px 0 rgba(255, 255, 255, 0.06),
+        0 0 0 1px rgba(15, 23, 42, 0.35);
+      backdrop-filter: blur(10px);
+    }
+
+    .observacion-editor::placeholder {
+      color: rgba(226, 232, 240, 0.75);
+    }
+
+    .observacion-editor:focus {
+      border-color: rgba(125, 211, 252, 0.72) !important;
+      box-shadow:
+        0 22px 48px rgba(2, 6, 23, 0.62),
+        0 0 0 3px rgba(56, 189, 248, 0.22),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      outline: none;
+    }
+
+    body:not(.dark-mode) .observacion-editor {
+      background: linear-gradient(160deg, rgba(248, 251, 255, 0.98), rgba(236, 243, 252, 0.98)) !important;
+      color: #0f172a !important;
+      border-color: rgba(37, 99, 235, 0.3) !important;
+      box-shadow:
+        0 14px 32px rgba(15, 23, 42, 0.14),
+        inset 0 1px 0 rgba(255, 255, 255, 0.68),
+        0 0 0 1px rgba(148, 163, 184, 0.2);
+      caret-color: #0f172a;
+    }
+
+    .observacion-final {
+      text-align: center;
+    }
+
+    .btn-ver-observacion {
+      min-width: 74px;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 12px;
+    }
+
+    .imagenes-cell {
+      min-width: 120px;
+    }
+
+    .imagenes-tools {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 6px;
+    }
+
+    .btn-imagenes-support {
+      min-width: 64px;
+      min-height: 30px;
+      border-radius: 999px;
+      border: 1px solid var(--border-strong);
+      background: linear-gradient(135deg, rgba(255, 145, 59, 0.2), rgba(249, 115, 22, 0.25));
+      color: var(--text);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 0 12px;
+      cursor: pointer;
+      transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+    }
+
+    .btn-imagenes-support:hover {
+      transform: translateY(-1px);
+      border-color: rgba(249, 115, 22, 0.58);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .imagenes-links {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      align-items: center;
+    }
+
+    .imagenes-links a {
+      display: inline-block;
+      min-height: auto;
+      padding: 0;
+      border: 0 !important;
+      border-radius: 0;
+      background: transparent !important;
+      box-shadow: none;
+      font-size: 11px;
+      color: #93c5fd;
+      text-decoration: underline;
+      line-height: 1.2;
+      white-space: nowrap;
+    }
+
+    .soporte-imagen-modal-card {
+      width: min(760px, 100%);
+      padding: 18px;
+    }
+
+    .soporte-imagen-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .soporte-imagen-title {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .soporte-imagen-odt {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 30px;
+      padding: 0 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--chip);
+      color: var(--text);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .02em;
+    }
+
+    .soporte-imagen-help {
+      margin: 0 0 12px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .soporte-imagen-zone {
+      border: 1px dashed var(--border-strong);
+      border-radius: 12px;
+      background: var(--input-bg);
+      padding: 14px;
+      margin-bottom: 12px;
+      outline: none;
+    }
+
+    .soporte-imagen-zone.is-focus {
+      border-color: rgba(37, 99, 235, 0.58);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.16);
+    }
+
+    .soporte-imagen-zone-text {
+      font-size: 13px;
+      color: var(--text);
+      margin: 0 0 10px;
+      line-height: 1.4;
+    }
+
+    .soporte-imagen-controls {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .soporte-file-input {
+      display: none;
+    }
+
+    .soporte-file-btn {
+      min-height: 34px;
+      border-radius: 9px;
+      border: 1px solid var(--border-strong);
+      background: var(--panel-strong);
+      color: var(--text);
+      font-size: 12px;
+      font-weight: 700;
+      padding: 0 12px;
+      cursor: pointer;
+    }
+
+    .soporte-imagen-count {
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .soporte-imagen-list {
+      display: grid;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .soporte-imagen-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 8px 10px;
+      background: var(--obs-bg);
+      font-size: 12px;
+    }
+
+    .soporte-imagen-item-name {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      color: var(--text);
+    }
+
+    .soporte-imagen-item-tag {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 24px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      padding: 0 8px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--muted);
+      background: var(--panel);
+    }
+
+    .soporte-imagen-remove {
+      min-height: 26px;
+      border-radius: 999px;
+      border: 1px solid var(--border-strong);
+      background: transparent;
+      color: var(--text);
+      padding: 0 10px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .soporte-imagen-actions {
+      margin-top: 14px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .soporte-imagen-save {
+      min-height: 36px;
+      border-radius: 10px;
+      border: 0;
+      padding: 0 14px;
+      background: var(--button-bg);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .soporte-imagen-save:hover {
+      background: var(--button-hover);
+      box-shadow: var(--shadow-md);
+    }
+
+    .observacion-modal {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: rgba(15, 23, 42, 0.56);
+      z-index: 9999;
+    }
+
+    .observacion-modal.is-open {
+      display: flex;
+    }
+
+    .observacion-modal-card {
+      width: min(680px, 100%);
+      max-height: 82vh;
+      overflow: auto;
+      padding: 20px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--panel-strong);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .observacion-modal-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .observacion-modal-title {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .observacion-modal-close {
+      min-width: auto;
+      padding: 8px 12px;
+    }
+
+    .observacion-modal-body {
+      white-space: pre-wrap;
+      word-break: break-word;
+      line-height: 1.6;
+      color: var(--text);
+      font-size: 14px;
+    }
+
+    .panel-finalizar {
+      width: min(520px, 100%);
+      padding: 18px;
+    }
+
+    .finalizar-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .finalizar-titulo {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .finalizar-odt {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 32px;
+      padding: 0 12px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--chip);
+      color: var(--text);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .04em;
+    }
+
+    .finalizar-ayuda {
+      margin: 0 0 12px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .finalizar-textarea {
+      width: 100%;
+      min-height: 112px;
+      resize: vertical;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--input-bg);
+      color: var(--text);
+      font-size: 14px;
+      line-height: 1.45;
+      padding: 10px 12px;
+      outline: none;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.02);
+    }
+
+    .finalizar-textarea:focus {
+      border-color: rgba(37, 99, 235, 0.42);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.16);
+    }
+
+    .finalizar-actions {
+      margin-top: 14px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    .finalizar-btn {
+      min-height: 38px;
+      border-radius: 10px;
+      border: 1px solid transparent;
+      padding: 0 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform .15s ease, box-shadow .15s ease, opacity .15s ease;
+    }
+
+    .finalizar-btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .finalizar-btn-cancel {
+      background: transparent;
+      color: var(--text);
+      border-color: var(--border-strong);
+    }
+
+    .finalizar-btn-save {
+      background: var(--button-bg);
+      color: #fff;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .finalizar-btn-save:hover {
+      background: var(--button-hover);
+      box-shadow: var(--shadow-md);
+    }
+
+    .theme-toggle {
+      min-width: 132px;
+    }
+
+    @media (max-width: 1100px) {
+      body { padding: 18px; }
+      .page-hero {
+        grid-template-columns: 1fr;
+        text-align: center;
+        justify-items: center;
+        gap: 12px;
+        min-height: 0;
+        padding: 16px;
+      }
+      .hero-copy {
+        text-align: center;
+      }
+      .session-card {
+        align-items: center;
+        text-align: center;
+        min-width: 0;
+        width: 100%;
+      }
+      .session-actions {
+        justify-content: center;
+      }
+      .session-meta {
+        align-items: center;
+        text-align: center;
+      }
+    }
+
+    @media (max-width: 760px) {
+      body { padding: 14px; }
+      .titulo-central { font-size: 26px; }
+      table {
+        min-width: 1380px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page-shell">
+    <div class="page-hero">
+      <div class="logo-atc">
+        <img
+          id="logoAtcImg"
+          src="/static/img/logo-atc.png"
+          data-dark-src="/static/img/logo-atc.png"
+          data-light-src="/static/img/logo-atc2.jpeg"
+          alt="Logo ATC"
+        >
+      </div>
+      <div class="hero-copy">
+        <h1 class="titulo-central">Incidencias Soporte Técnico</h1>
+        <p class="hero-subtitle">Gestiona derivaciones, observaciones, responsables y cierres.</p>
+      </div>
+      <div class="session-card">
+        <div class="session-actions">
+          <button id="themeToggle" class="action-chip theme-toggle" type="button">Modo oscuro</button>
+          <a class="volver-link" href="/panel">&larr; Volver</a>
+        </div>
+        <div class="session-meta">
+          <div class="session-label"></div>
+          <div id="usuarioActual">Sesion: Cargando...</div>
+        </div>
+      </div>
+    </div>
+
+      <div class="tabla-scroll-container">
+        <table id="tablaRegistro">
+          <colgroup>
+            <col class="col-odt" />
+            <col class="col-fecha" />
+            <col class="col-cliente" />
+            <col class="col-problema" />
+            <col class="col-observacion" />
+            <col class="col-derivacion" />
+            <col class="col-tecnico" />
+            <col class="col-acompanante" />
+            <col class="col-estado" />
+            <col class="col-observacion-final" />
+            <col class="col-imagenes" />
+          </colgroup>
+          <thead>
+            <tr class="encabezados">
+              <th>ODT</th>
+              <th>Fecha</th>
+              <th>Cliente</th>
+              <th>Problema</th>
+              <th>Observación</th>
+              <th>Derivación</th>
+              <th>Técnico</th>
+              <th>Acompañante</th>
+              <th>Estado</th>
+              <th>Observación Final</th>
+              <th>Imagenes</th>
+            </tr>
+            <tr class="filtros">
+              <th>
+                <select id="filtroODT" onchange="applyFilters()">
+                  <option value="">Todos</option>
+                </select>
+              </th>
+              <th>
+                <select id="filtroFecha" onchange="applyFilters()">
+                  <option value="">Mes - Año</option>
+                </select>
+              </th>
+              <th>
+                <input
+                  id="filtroCliente"
+                  list="clientesDatalist"
+                  placeholder="Escribe cliente..."
+                  oninput="onFiltroClienteInput()"
+                />
+                <datalist id="clientesDatalist"></datalist>
+              </th>
+              <th>
+                <select id="filtroProblema" onchange="applyFilters()">
+                  <option value="">Todos</option>
+                </select>
+              </th>
+              <th></th>
+              <th>
+                <select id="filtroDerivacion" onchange="applyFilters()">
+                  <option value="">Todos</option>
+                </select>
+              </th>
+              <th>
+                <select id="filtroTecnico" onchange="applyFilters()">
+                  <option value="">Todos</option>
+                </select>
+              </th>
+              <th>
+                <select id="filtroAcompanante" onchange="applyFilters()">
+                  <option value="">Todos</option>
+                </select>
+              </th>
+              <th>
+                <select id="filtroEstado" onchange="applyFilters()">
+                  <option value="">Todos</option>
+                </select>
+              </th>
+              <th></th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="registrosExistentes"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div id="observacionFinalModal" class="observacion-modal" aria-hidden="true">
+    <div class="observacion-modal-card">
+      <div class="observacion-modal-head">
+        <h3 class="observacion-modal-title">Observación final</h3>
+        <button type="button" class="observacion-modal-close" onclick="closeObservacionFinalModal()">Cerrar</button>
+      </div>
+      <div id="observacionFinalModalBody" class="observacion-modal-body"></div>
+    </div>
+  </div>
+
+  <div id="finalizadoSoporteModal" class="observacion-modal" aria-hidden="true">
+    <div class="observacion-modal-card panel-finalizar">
+      <div class="finalizar-header">
+        <h3 class="finalizar-titulo">Finalizado por Soporte</h3>
+        <span id="finalizadoSoporteOdt" class="finalizar-odt">ODT</span>
+      </div>
+      <p class="finalizar-ayuda">
+        Indica brevemente qué se hizo para cerrar esta ODT. Este texto quedará guardado en Observación Final.
+      </p>
+      <textarea
+        id="finalizadoSoporteTexto"
+        class="finalizar-textarea"
+        placeholder="Ejemplo: Se contacto al cliente, se valido conectividad y se resolvio la incidencia."
+      ></textarea>
+      <div class="finalizar-actions">
+        <button type="button" class="finalizar-btn finalizar-btn-cancel" onclick="cancelFinalizadoSoportePrompt()">
+          Cancelar
+        </button>
+        <button type="button" class="finalizar-btn finalizar-btn-save" onclick="confirmFinalizadoSoportePrompt()">
+          Guardar y Terminar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="soporteImagenModal" class="observacion-modal" aria-hidden="true">
+    <div class="observacion-modal-card soporte-imagen-modal-card">
+      <div class="soporte-imagen-head">
+        <h3 class="soporte-imagen-title">Imagenes ODT</h3>
+        <span id="soporteImagenModalOdt" class="soporte-imagen-odt">ODT</span>
+      </div>
+      <p class="soporte-imagen-help">
+        Puedes pegar un pantallazo con <b>Ctrl + V</b> o adjuntar archivos. Máximo 3 imagenes por ODT.
+      </p>
+      <div id="soporteImagenPasteZone" class="soporte-imagen-zone" tabindex="0">
+        <p class="soporte-imagen-zone-text">Haz click aquí y pega la captura, o usa “Adjuntar archivo”.</p>
+        <div class="soporte-imagen-controls">
+          <button id="soporteImagenAdjuntarBtn" type="button" class="soporte-file-btn">Adjuntar archivo</button>
+          <input id="soporteImagenFileInput" class="soporte-file-input" type="file" accept="image/*" multiple />
+          <span id="soporteImagenCounter" class="soporte-imagen-count">0/3</span>
+        </div>
+        <div id="soporteImagenList" class="soporte-imagen-list"></div>
+      </div>
+      <div class="soporte-imagen-actions">
+        <button type="button" class="finalizar-btn finalizar-btn-cancel" onclick="closeSoporteImagenModal()">
+          Cancelar
+        </button>
+        <button id="soporteImagenSaveBtn" type="button" class="soporte-imagen-save" onclick="saveSoporteImagenes()">
+          Subir imagenes
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const ATC_TOKEN = localStorage.getItem("ATC_TOKEN") || "";
+    const MESES_ES = [
+      "Enero",
+      "Febrero",
+      "Marzo",
+      "Abril",
+      "Mayo",
+      "Junio",
+      "Julio",
+      "Agosto",
+      "Septiembre",
+      "Octubre",
+      "Noviembre",
+      "Diciembre",
+    ];
+    const DERIVACION_OPTIONS = [
+      "Pendiente",
+      "Cliente",
+      "Repetida",
+      "Finalizado por Soporte",
+      "Técnico Externo",
+      "Servicio Técnico",
+      "Coordinacion",
+      "Proveedor de Internet",
+    ];
+    let REGISTROS = [];
+    let estadoDefaultAplicado = false;
+    let derivacionDefaultAplicada = false;
+    let fechaDefaultAplicada = false;
+    let TECNICOS_OPTIONS = [];
+    let finalizadoSoporteResolver = null;
+    const SOPORTE_IMAGE_MAX = 3;
+    let soporteImagenState = {
+      odt: "",
+      existing: [],
+      staged: [],
+    };
+
+    function normalizeText(value) {
+      return (repairDisplayText(value) || "")
+        .toString()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase()
+        .trim();
+    }
+
+    function repairDisplayText(value) {
+      let text = (value === null || value === undefined) ? "" : String(value);
+      if (!text) return "";
+
+      const looksMojibake = /Ã|Â|�/.test(text);
+      if (looksMojibake && typeof TextEncoder !== "undefined" && typeof TextDecoder !== "undefined") {
+        try {
+          const bytes = new Uint8Array([...text].map((ch) => ch.charCodeAt(0) & 0xff));
+          const repaired = new TextDecoder("utf-8").decode(bytes);
+          if (repaired && repaired !== text) text = repaired;
+        } catch (_) {
+          // Si no se puede reparar por bytes, seguimos con reemplazos directos.
+        }
+      }
+
+      // Reemplazos directos para casos frecuentes donde ya se perdió el byte original.
+      text = text
+        .replace(/\bT[\?�]cnico\b/gi, "Técnico")
+        .replace(/\bAcompanante\b/g, "Acompañante")
+        .replace(/\bObservacion\b/g, "Observación")
+        .replace(/\bConexion\b/g, "Conexión");
+
+      return text;
+    }
+
+    function parseDateFromText(value) {
+      const raw = repairDisplayText(value).toString().replace(/\s+/g, " ").trim();
+      if (!raw) return null;
+
+      const isoMatch = raw.match(
+        /^(\d{4})-(\d{1,2})-(\d{1,2})(?:[ T](\d{1,2}):(\d{2})(?::(\d{2})(?:\.(\d{1,6}))?)?)?/
+      );
+      if (isoMatch) {
+        const year = parseInt(isoMatch[1], 10);
+        const month = parseInt(isoMatch[2], 10);
+        const day = parseInt(isoMatch[3], 10);
+        const hour = parseInt(isoMatch[4] || "0", 10);
+        const minute = parseInt(isoMatch[5] || "0", 10);
+        const date = new Date(year, month - 1, day, hour, minute, 0, 0);
+        if (!Number.isNaN(date.getTime())) return date;
+      }
+
+      const match = raw.match(/(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})(?:\s+(\d{1,2}):(\d{2}))?/);
+      if (!match) return null;
+
+      const day = parseInt(match[1], 10);
+      const month = parseInt(match[2], 10);
+      let year = parseInt(match[3], 10);
+      if (year < 100) year += 2000;
+      const hour = parseInt(match[4] || "0", 10);
+      const minute = parseInt(match[5] || "0", 10);
+
+      const date = new Date(year, month - 1, day, hour, minute, 0, 0);
+      if (Number.isNaN(date.getTime())) return null;
+      return date;
+    }
+
+    function getMonthYearMeta(fecha) {
+      const date = parseDateFromText(fecha);
+      if (!date) return null;
+      const year = date.getFullYear();
+      const month = date.getMonth() + 1;
+      return {
+        key: `${year}-${String(month).padStart(2, "0")}`,
+        label: `${MESES_ES[month - 1]} - ${year}`,
+        sortValue: year * 100 + month,
+      };
+    }
+
+    function formatDateForDisplay(value) {
+      const date = parseDateFromText(value);
+      if (!date) return displayCellValue(value);
+      const dd = String(date.getDate()).padStart(2, "0");
+      const mm = String(date.getMonth() + 1).padStart(2, "0");
+      const yyyy = date.getFullYear();
+      const hh = String(date.getHours()).padStart(2, "0");
+      const min = String(date.getMinutes()).padStart(2, "0");
+      return `${dd}-${mm}-${yyyy} ${hh}:${min}`;
+    }
+
+    function smartClientMatch(cliente, query) {
+      const target = normalizeText(cliente);
+      const q = normalizeText(query);
+      if (!q) return true;
+      if (target.includes(q)) return true;
+      const tokens = q.split(/\s+/).filter(Boolean);
+      return tokens.every((token) => target.includes(token));
+    }
+
+    function equalsNormalized(a, b) {
+      return normalizeText(a) === normalizeText(b);
+    }
+
+    function fillSelect(selectId, values, emptyLabel = "Todos") {
+      const select = document.getElementById(selectId);
+      if (!select) return;
+      const previousValue = select.value;
+      select.innerHTML = "";
+
+      const emptyOption = document.createElement("option");
+      emptyOption.value = "";
+      emptyOption.textContent = emptyLabel;
+      select.appendChild(emptyOption);
+
+      values.forEach((value) => {
+        const option = document.createElement("option");
+        option.value = value;
+        option.textContent = repairDisplayText(value);
+        select.appendChild(option);
+      });
+
+      if ([...select.options].some((opt) => opt.value === previousValue)) {
+        select.value = previousValue;
+      }
+    }
+
+    function configureFilters() {
+      const odtValues = [...new Set(REGISTROS.map((r) => (r.fila[0] || "").toString().trim()).filter(Boolean))];
+      odtValues.sort((a, b) => {
+        const na = parseInt(a.replace(/\D/g, ""), 10);
+        const nb = parseInt(b.replace(/\D/g, ""), 10);
+        if (!Number.isNaN(na) && !Number.isNaN(nb) && na !== nb) return na - nb;
+        return a.localeCompare(b, "es", { sensitivity: "base" });
+      });
+      fillSelect("filtroODT", odtValues);
+
+      const problemas = [...new Set(REGISTROS.map((r) => (r.fila[3] || "").toString().trim()).filter(Boolean))];
+      problemas.sort((a, b) => a.localeCompare(b, "es", { sensitivity: "base" }));
+      fillSelect("filtroProblema", problemas);
+
+      fillSelect("filtroDerivacion", DERIVACION_OPTIONS);
+      const filtroDerivacion = document.getElementById("filtroDerivacion");
+      if (!derivacionDefaultAplicada && filtroDerivacion) {
+        const pendienteOpt = [...filtroDerivacion.options].find(
+          (opt) => normalizeText(opt.value) === "pendiente"
+        );
+        if (pendienteOpt) {
+          filtroDerivacion.value = pendienteOpt.value;
+        }
+        derivacionDefaultAplicada = true;
+      }
+
+      const tecnicosSet = new Set();
+      const acompanantesSet = new Set();
+      (TECNICOS_OPTIONS || []).forEach((name) => {
+        const clean = (name || "").toString().trim();
+        if (clean) {
+          tecnicosSet.add(clean);
+          acompanantesSet.add(clean);
+        }
+      });
+      REGISTROS.forEach((r) => {
+        const principalRaw = (r.fila[13] || "").toString().trim();
+        const acompRaw = (r.fila[14] || "").toString().trim();
+        if (principalRaw && principalRaw !== "-") tecnicosSet.add(principalRaw);
+        if (acompRaw && acompRaw !== "-") acompanantesSet.add(acompRaw);
+      });
+      const tecnicos = [...tecnicosSet];
+      tecnicos.sort((a, b) => a.localeCompare(b, "es", { sensitivity: "base" }));
+      fillSelect("filtroTecnico", tecnicos);
+      const acompanantes = [...acompanantesSet];
+      acompanantes.sort((a, b) => a.localeCompare(b, "es", { sensitivity: "base" }));
+      fillSelect("filtroAcompanante", acompanantes);
+
+      const estados = [...new Set(REGISTROS.map((r) => (r.fila[8] || "").toString().trim()).filter(Boolean))];
+      estados.sort((a, b) => a.localeCompare(b, "es", { sensitivity: "base" }));
+      fillSelect("filtroEstado", estados);
+      const filtroEstado = document.getElementById("filtroEstado");
+      if (!estadoDefaultAplicado && filtroEstado) {
+        const pendienteOpt = [...filtroEstado.options].find(
+          (opt) => normalizeText(opt.value) === "pendiente"
+        );
+        if (pendienteOpt) {
+          filtroEstado.value = pendienteOpt.value;
+        }
+        estadoDefaultAplicado = true;
+      }
+
+      const monthMap = new Map();
+      REGISTROS.forEach((registro) => {
+        const meta = getMonthYearMeta(registro.fila[1]);
+        if (meta && !monthMap.has(meta.key)) {
+          monthMap.set(meta.key, meta);
+        }
+      });
+
+      const fechaValues = [...monthMap.values()].sort((a, b) => b.sortValue - a.sortValue);
+      const fechaSelect = document.getElementById("filtroFecha");
+      const previousFecha = fechaSelect.value;
+      fechaSelect.innerHTML = '<option value="">Mes - Año</option>';
+      fechaValues.forEach((meta) => {
+        const option = document.createElement("option");
+        option.value = meta.key;
+        option.textContent = meta.label;
+        fechaSelect.appendChild(option);
+      });
+      const currentDate = new Date();
+      const currentKey = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, "0")}`;
+      if (!fechaDefaultAplicada) {
+        const currentOpt = [...fechaSelect.options].find((opt) => opt.value === currentKey);
+        if (currentOpt) {
+          fechaSelect.value = currentKey;
+        } else if ([...fechaSelect.options].some((opt) => opt.value === previousFecha)) {
+          fechaSelect.value = previousFecha;
+        }
+        fechaDefaultAplicada = true;
+      } else if ([...fechaSelect.options].some((opt) => opt.value === previousFecha)) {
+        fechaSelect.value = previousFecha;
+      }
+
+      const clientes = [...new Set(REGISTROS.map((r) => (r.fila[2] || "").toString().trim()).filter(Boolean))];
+      clientes.sort((a, b) => a.localeCompare(b, "es", { sensitivity: "base" }));
+      const datalist = document.getElementById("clientesDatalist");
+      datalist.innerHTML = "";
+      clientes.forEach((cliente) => {
+        const option = document.createElement("option");
+        option.value = repairDisplayText(cliente);
+        datalist.appendChild(option);
+      });
+    }
+
+    function displayCellValue(value) {
+      if (value === null || value === undefined) return "-";
+      const text = repairDisplayText(value).toString().trim();
+      return text === "" ? "-" : text;
+    }
+
+    function escapeHtml(value) {
+      return repairDisplayText(value || "")
+        .toString()
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/\"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    function parseSupportObservationLine(line) {
+      const currentFmt = line.match(
+        /^\[([^\]]+?)\s*-\s*(\d{2}\/\d{2}\/\d{4}\s+\d{2}:\d{2})\]\s*(.+)$/i
+      );
+      if (currentFmt) {
+        return { user: currentFmt[1], date: currentFmt[2], obs: currentFmt[3] };
+      }
+
+      // Compatibilidad con historial antiguo: [Usuario - Fecha - Obs]
+      const legacyFmt = line.match(
+        /^\[([^\]]+?)\s*-\s*(\d{2}\/\d{2}\/\d{4}\s+\d{2}:\d{2})\s*-\s*([^\]]+)\]$/i
+      );
+      if (legacyFmt) {
+        return { user: legacyFmt[1], date: legacyFmt[2], obs: legacyFmt[3] };
+      }
+      return null;
+    }
+
+    function parseServiceObservationLine(line) {
+      const match = line.match(
+        /^(\d{2}\/\d{2}\/\d{4}\s+\d{2}:\d{2})\s*-\s*([^\-\n\r][^\n\r]*?)\s*-\s*(.+)$/i
+      );
+      if (!match) return null;
+      return { date: match[1], user: match[2], obs: match[3] };
+    }
+
+    function renderObsBlock(kind, htmlContent) {
+      return `<div class="obs-block obs-${kind}">${htmlContent}</div>`;
+    }
+
+    function renderObservationGroup(kind, title, lines) {
+      const parsedLines = (lines || []).filter((line) => String(line || "").trim() !== "");
+      if (!parsedLines.length) return "";
+      const content = parsedLines.map((line) => `<div class="obs-line">${escapeHtml(line)}</div>`).join("");
+      return `
+        <div class="obs-group obs-group-${kind}">
+          <div class="obs-group-title">${escapeHtml(title)}</div>
+          <div class="obs-group-body">${content}</div>
+        </div>
+      `;
+    }
+
+    function parseObservationLines(value) {
+      const text = displayCellValue(value);
+      if (text === "-") return [];
+      const formatted = text.replace(/\\n/g, "\n").replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+      return formatted
+        .split("\n")
+        .map((line) => line.trim())
+        .filter(Boolean);
+    }
+
+    function formatObservationHtml(opsValue, soporteValue = "", servicioValue = "") {
+      const fromPuestos = parseObservationLines(opsValue);
+      const fromSoporte = parseObservationLines(soporteValue);
+      const fromServicio = parseObservationLines(servicioValue);
+
+      if (!fromPuestos.length && !fromSoporte.length && !fromServicio.length) return "-";
+
+      const bloques = [];
+      const bloquePuestos = renderObservationGroup("puestos", "Registro Operaciones", fromPuestos);
+      const bloqueSoporte = renderObservationGroup("soporte", "Gestión Soporte", fromSoporte);
+      const bloqueServicio = renderObservationGroup("servicio", "Gestión Servicio Técnico", fromServicio);
+      if (bloquePuestos) bloques.push(bloquePuestos);
+      if (bloqueSoporte) bloques.push(bloqueSoporte);
+      if (bloqueServicio) bloques.push(bloqueServicio);
+      if (!bloques.length) return "-";
+
+      return `
+        <div class="obs-groups">
+          ${bloques.join("")}
+        </div>
+      `;
+    }
+
+    function labelImagenByIndex(index) {
+      return `Imagen ${index + 1}`;
+    }
+
+    function fileNameFromUrl(url, fallback) {
+      const clean = (url || "").toString().trim();
+      if (!clean) return fallback || "Imagen";
+      try {
+        const parsed = new URL(clean, window.location.origin);
+        const segment = parsed.pathname.split("/").filter(Boolean).pop() || "";
+        const decoded = decodeURIComponent(segment);
+        return decoded || fallback || "Imagen";
+      } catch (_) {
+        const segment = clean.split("/").filter(Boolean).pop() || "";
+        return segment || fallback || "Imagen";
+      }
+    }
+
+    function renderImagenesCell(tdImg, fila) {
+      tdImg.className = "imagenes-cell";
+      const urlsBase = [fila[10], fila[11], fila[12]]
+        .map((x) => (x || "").toString().trim())
+        .filter(Boolean);
+      const urlsExtra = Array.isArray(fila[16])
+        ? fila[16].map((x) => (x || "").toString().trim()).filter(Boolean)
+        : [];
+      const urls = [...new Set([...urlsBase, ...urlsExtra])].slice(0, SOPORTE_IMAGE_MAX);
+      const odt = (fila[0] || "").toString().trim();
+
+      const tools = document.createElement("div");
+      tools.className = "imagenes-tools";
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "btn-imagenes-support";
+      btn.textContent = "Subir";
+      btn.onclick = () => openSoporteImagenModal(odt, urls);
+      tools.appendChild(btn);
+      tdImg.appendChild(tools);
+
+      const links = document.createElement("div");
+      links.className = "imagenes-links";
+      urls.forEach((url, idx) => {
+        const a = document.createElement("a");
+        a.href = url;
+        a.target = "_blank";
+        a.rel = "noopener noreferrer";
+        a.textContent = labelImagenByIndex(idx);
+        links.appendChild(a);
+      });
+      tdImg.appendChild(links);
+    }
+
+    function getSoporteImagenSlotsDisponibles() {
+      return Math.max(0, SOPORTE_IMAGE_MAX - (soporteImagenState.existing || []).length - (soporteImagenState.staged || []).length);
+    }
+
+    function renderSoporteImagenModalList() {
+      const list = document.getElementById("soporteImagenList");
+      const counter = document.getElementById("soporteImagenCounter");
+      if (!list || !counter) return;
+      list.innerHTML = "";
+
+      const existing = soporteSafeArray(soporteImagenState.existing).slice(0, SOPORTE_IMAGE_MAX);
+      const staged = soporteSafeArray(soporteImagenState.staged);
+
+      existing.forEach((url, idx) => {
+        const row = document.createElement("div");
+        row.className = "soporte-imagen-item";
+        const name = document.createElement("div");
+        name.className = "soporte-imagen-item-name";
+        name.textContent = fileNameFromUrl(url, labelImagenByIndex(idx));
+        const tag = document.createElement("span");
+        tag.className = "soporte-imagen-item-tag";
+        tag.textContent = labelImagenByIndex(idx);
+        row.appendChild(name);
+        row.appendChild(tag);
+        list.appendChild(row);
+      });
+
+      staged.forEach((entry, stagedIdx) => {
+        const row = document.createElement("div");
+        row.className = "soporte-imagen-item";
+        const name = document.createElement("div");
+        name.className = "soporte-imagen-item-name";
+        name.textContent = (entry.file && entry.file.name) ? entry.file.name : `captura_${stagedIdx + 1}.png`;
+        const right = document.createElement("div");
+        right.style.display = "flex";
+        right.style.gap = "8px";
+        right.style.alignItems = "center";
+
+        const tag = document.createElement("span");
+        tag.className = "soporte-imagen-item-tag";
+        tag.textContent = labelImagenByIndex(existing.length + stagedIdx);
+
+        const removeBtn = document.createElement("button");
+        removeBtn.type = "button";
+        removeBtn.className = "soporte-imagen-remove";
+        removeBtn.textContent = "Quitar";
+        removeBtn.onclick = () => {
+          soporteImagenState.staged.splice(stagedIdx, 1);
+          renderSoporteImagenModalList();
+        };
+
+        right.appendChild(tag);
+        right.appendChild(removeBtn);
+        row.appendChild(name);
+        row.appendChild(right);
+        list.appendChild(row);
+      });
+
+      const total = existing.length + staged.length;
+      counter.textContent = `${total}/${SOPORTE_IMAGE_MAX}`;
+    }
+
+    function soporteSafeArray(value) {
+      return Array.isArray(value) ? value : [];
+    }
+
+    function pushSoporteImageFile(file) {
+      if (!file) return;
+      if (!String(file.type || "").startsWith("image/")) {
+        alert("Solo se permiten archivos de imagen.");
+        return;
+      }
+      const isDuplicated = soporteSafeArray(soporteImagenState.staged).some((entry) => {
+        const f = entry?.file;
+        if (!f) return false;
+        return (
+          String(f.name || "") === String(file.name || "") &&
+          Number(f.size || 0) === Number(file.size || 0) &&
+          String(f.type || "") === String(file.type || "") &&
+          Number(f.lastModified || 0) === Number(file.lastModified || 0)
+        );
+      });
+      if (isDuplicated) {
+        return;
+      }
+      const slots = getSoporteImagenSlotsDisponibles();
+      if (slots <= 0) {
+        alert("Esta ODT ya tiene el maximo de 3 imagenes.");
+        return;
+      }
+      soporteImagenState.staged.push({ file });
+    }
+
+    function addFilesToSoporteModal(fileList) {
+      const files = Array.from(fileList || []);
+      if (!files.length) return;
+      files.forEach((file) => {
+        if (getSoporteImagenSlotsDisponibles() > 0) {
+          pushSoporteImageFile(file);
+        }
+      });
+      renderSoporteImagenModalList();
+    }
+
+    function handleSoportePaste(event) {
+      if (event && event.__soportePasteHandled) return;
+      const modal = document.getElementById("soporteImagenModal");
+      if (!modal || !modal.classList.contains("is-open")) return;
+      const items = event.clipboardData?.items || [];
+      let found = false;
+      for (const item of items) {
+        if (item.kind === "file" && String(item.type || "").startsWith("image/")) {
+          const file = item.getAsFile();
+          if (file) {
+            found = true;
+            pushSoporteImageFile(file);
+          }
+        }
+      }
+      if (found) {
+        event.__soportePasteHandled = true;
+        event.preventDefault();
+        if (typeof event.stopPropagation === "function") event.stopPropagation();
+        renderSoporteImagenModalList();
+      }
+    }
+
+    function openSoporteImagenModal(odt, urlsActuales) {
+      const modal = document.getElementById("soporteImagenModal");
+      const odtBadge = document.getElementById("soporteImagenModalOdt");
+      const input = document.getElementById("soporteImagenFileInput");
+      if (!modal || !odtBadge || !input) return;
+
+      soporteResetModalFocus();
+      soporteSafeArray(urlsActuales);
+      soporteImagenState = {
+        odt: (odt || "").toString().trim(),
+        existing: [...new Set(soporteSafeArray(urlsActuales).map((u) => (u || "").toString().trim()).filter(Boolean))].slice(
+          0,
+          SOPORTE_IMAGE_MAX
+        ),
+        staged: [],
+      };
+      odtBadge.textContent = `ODT ${soporteImagenState.odt || "-"}`;
+      input.value = "";
+      renderSoporteImagenModalList();
+      modal.classList.add("is-open");
+      modal.setAttribute("aria-hidden", "false");
+      document.body.style.overflow = "hidden";
+      const zone = document.getElementById("soporteImagenPasteZone");
+      if (zone) setTimeout(() => zone.focus(), 0);
+    }
+
+    function closeSoporteImagenModal() {
+      const modal = document.getElementById("soporteImagenModal");
+      if (!modal) return;
+      modal.classList.remove("is-open");
+      modal.setAttribute("aria-hidden", "true");
+      document.body.style.overflow = "";
+      soporteImagenState = { odt: "", existing: [], staged: [] };
+      const input = document.getElementById("soporteImagenFileInput");
+      if (input) input.value = "";
+    }
+
+    function soporteResetModalFocus() {
+      const zone = document.getElementById("soporteImagenPasteZone");
+      if (zone) zone.classList.remove("is-focus");
+    }
+
+    function saveSoporteImagenes() {
+      const odt = (soporteImagenState.odt || "").trim();
+      const staged = soporteSafeArray(soporteImagenState.staged);
+      if (!odt) {
+        alert("No se pudo identificar la ODT.");
+        return;
+      }
+      if (!staged.length) {
+        alert("Debes agregar al menos una imagen.");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("odt", odt);
+      staged.forEach((entry) => {
+        if (entry && entry.file) {
+          formData.append("files", entry.file, entry.file.name || "captura.png");
+        }
+      });
+
+      const saveBtn = document.getElementById("soporteImagenSaveBtn");
+      if (saveBtn) {
+        saveBtn.disabled = true;
+        saveBtn.textContent = "Subiendo...";
+      }
+      fetch("/api/incidencias/upload-image", {
+        method: "POST",
+        credentials: "include",
+        body: formData,
+      })
+        .then(async (response) => {
+          const contentType = response.headers.get("content-type") || "";
+          const payload = contentType.includes("application/json")
+            ? await response.json()
+            : { detail: await response.text() };
+          if (!response.ok) {
+            throw new Error(payload?.detail || payload?.message || `HTTP ${response.status}`);
+          }
+          return payload;
+        })
+        .then(() => {
+          if (saveBtn) {
+            saveBtn.disabled = false;
+            saveBtn.textContent = "Subir imagenes";
+          }
+          closeSoporteImagenModal();
+          cargarRegistros();
+        })
+        .catch((error) => {
+          if (saveBtn) {
+            saveBtn.disabled = false;
+            saveBtn.textContent = "Subir imagenes";
+          }
+          alert(error?.message || "No se pudieron subir las imagenes.");
+        });
+    }
+
+    function openObservacionFinalModal(texto) {
+      const modal = document.getElementById("observacionFinalModal");
+      const body = document.getElementById("observacionFinalModalBody");
+      if (!modal || !body) return;
+      body.textContent = repairDisplayText((texto || "").toString().trim()) || "Sin observacion final.";
+      modal.classList.add("is-open");
+      modal.setAttribute("aria-hidden", "false");
+      document.body.style.overflow = "hidden";
+    }
+
+    function closeObservacionFinalModal() {
+      const modal = document.getElementById("observacionFinalModal");
+      if (!modal) return;
+      modal.classList.remove("is-open");
+      modal.setAttribute("aria-hidden", "true");
+      document.body.style.overflow = "";
+    }
+
+    function openFinalizadoSoportePrompt(odt) {
+      const modal = document.getElementById("finalizadoSoporteModal");
+      const odtBadge = document.getElementById("finalizadoSoporteOdt");
+      const input = document.getElementById("finalizadoSoporteTexto");
+      if (!modal || !odtBadge || !input) {
+        return Promise.resolve({ confirmed: false, observacion: "" });
+      }
+
+      odtBadge.textContent = `ODT ${odt || "-"}`;
+      input.value = "";
+      modal.classList.add("is-open");
+      modal.setAttribute("aria-hidden", "false");
+      document.body.style.overflow = "hidden";
+      setTimeout(() => input.focus(), 0);
+
+      return new Promise((resolve) => {
+        finalizadoSoporteResolver = resolve;
+      });
+    }
+
+    function closeFinalizadoSoportePrompt(result) {
+      const modal = document.getElementById("finalizadoSoporteModal");
+      if (modal) {
+        modal.classList.remove("is-open");
+        modal.setAttribute("aria-hidden", "true");
+      }
+      document.body.style.overflow = "";
+      if (finalizadoSoporteResolver) {
+        const resolver = finalizadoSoporteResolver;
+        finalizadoSoporteResolver = null;
+        resolver(result);
+      }
+    }
+
+    function cancelFinalizadoSoportePrompt() {
+      closeFinalizadoSoportePrompt({ confirmed: false, observacion: "" });
+    }
+
+    function confirmFinalizadoSoportePrompt() {
+      const input = document.getElementById("finalizadoSoporteTexto");
+      if (!input) {
+        closeFinalizadoSoportePrompt({ confirmed: false, observacion: "" });
+        return;
+      }
+      const observacion = (input.value || "").trim();
+      if (!observacion) {
+        alert("Debes indicar que se hizo para finalizar esta ODT.");
+        input.focus();
+        return;
+      }
+      closeFinalizadoSoportePrompt({ confirmed: true, observacion });
+    }
+
+    function renderRegistros(items) {
+      const tbody = document.getElementById("registrosExistentes");
+      tbody.innerHTML = "";
+
+      items.forEach((item) => {
+        const fila = item.fila;
+        const tr = document.createElement("tr");
+        const row = [fila[0], fila[1], fila[2], fila[3], fila[5], fila[4], fila[6], fila[7], fila[8], fila[9]];
+        const rowSourceCols = [0, 1, 2, 3, 17, 4, 6, 7, 8, 9];
+
+        row.forEach((v, i) => {
+          const td = document.createElement("td");
+          td.dataset.rowIndex = item.rowIndex;
+          td.dataset.sourceIndex = item.sourceIndex;
+          td.dataset.colIndex = i;
+          td.dataset.sourceCol = rowSourceCols[i];
+          if (i === 6 || i === 7) td.className = "tecnico-cell";
+          if (i === 4) td.className = "observacion-cell";
+          if (i === 9) td.className = "observacion-final";
+          if (i === 4) {
+            td.innerHTML = formatObservationHtml(fila[5], fila[17], fila[18]);
+          } else if (i === 6 || i === 7) {
+            td.textContent = (v || "").toString().trim();
+          } else if (i === 9) {
+            const textoFinal = (v || "").toString().trim();
+            if (textoFinal) {
+              const btn = document.createElement("button");
+              btn.type = "button";
+              btn.className = "btn-ver-observacion";
+              btn.textContent = "Ver";
+              btn.onclick = () => openObservacionFinalModal(textoFinal);
+              td.appendChild(btn);
+            } else {
+              td.textContent = "-";
+            }
+          } else {
+            td.textContent = i === 1 ? formatDateForDisplay(v) : displayCellValue(v);
+          }
+          if (i === 5) td.ondblclick = () => editarTexto(td, 6, fila[0], fila[2]);
+          if (i === 4) td.ondblclick = () => editarTexto(td, 7);
+          if (i === 6 || i === 7) td.ondblclick = () => editarTexto(td, 8);
+          tr.appendChild(td);
+        });
+
+        const tdImg = document.createElement("td");
+        renderImagenesCell(tdImg, fila);
+        tr.appendChild(tdImg);
+
+        tbody.appendChild(tr);
+      });
+    }
+
+    function applyFilters() {
+      const odt = (document.getElementById("filtroODT").value || "").trim();
+      const fecha = (document.getElementById("filtroFecha").value || "").trim();
+      const cliente = (document.getElementById("filtroCliente").value || "").trim();
+      const problema = (document.getElementById("filtroProblema").value || "").trim();
+      const derivacion = (document.getElementById("filtroDerivacion").value || "").trim();
+      const tecnico = (document.getElementById("filtroTecnico").value || "").trim();
+      const acompanante = (document.getElementById("filtroAcompanante").value || "").trim();
+      const estado = (document.getElementById("filtroEstado").value || "").trim();
+
+      const filtrados = REGISTROS.filter((registro) => {
+        const fila = registro.fila;
+
+        if (odt && (fila[0] || "").toString().trim() !== odt) return false;
+
+        if (fecha) {
+          const meta = getMonthYearMeta(fila[1]);
+          if (!meta || meta.key !== fecha) return false;
+        }
+
+        if (cliente && !smartClientMatch(fila[2], cliente)) return false;
+        if (derivacion && !equalsNormalized(fila[4], derivacion)) return false;
+        if (problema && !equalsNormalized(fila[3], problema)) return false;
+        if (tecnico) {
+          const tecnicoDisplay = (fila[6] || "").toString().trim();
+          const tecnicoPrincipal = (fila[13] || "").toString().trim();
+          const okTecnico =
+            equalsNormalized(tecnicoDisplay, tecnico) ||
+            equalsNormalized(tecnicoPrincipal, tecnico);
+          if (!okTecnico) return false;
+        }
+        if (acompanante) {
+          const acompDisplay = (fila[7] || "").toString().trim();
+          const acompRaw = (fila[14] || "").toString().trim();
+          const okAcompanante =
+            equalsNormalized(acompDisplay, acompanante) ||
+            equalsNormalized(acompRaw, acompanante);
+          if (!okAcompanante) return false;
+        }
+        if (estado && !equalsNormalized(fila[8], estado)) return false;
+
+        return true;
+      });
+
+      renderRegistros(filtrados);
+    }
+
+    function onFiltroClienteInput() {
+      applyFilters();
+    }
+
+    document.addEventListener("click", (event) => {
+      const modalObservacion = document.getElementById("observacionFinalModal");
+      const modalFinalizar = document.getElementById("finalizadoSoporteModal");
+      const modalImagen = document.getElementById("soporteImagenModal");
+      if (event.target === modalObservacion) {
+        closeObservacionFinalModal();
+      } else if (event.target === modalFinalizar) {
+        cancelFinalizadoSoportePrompt();
+      } else if (event.target === modalImagen) {
+        closeSoporteImagenModal();
+      }
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        const modalImagen = document.getElementById("soporteImagenModal");
+        if (modalImagen && modalImagen.classList.contains("is-open")) {
+          closeSoporteImagenModal();
+          return;
+        }
+        const modalFinalizar = document.getElementById("finalizadoSoporteModal");
+        if (modalFinalizar && modalFinalizar.classList.contains("is-open")) {
+          cancelFinalizadoSoportePrompt();
+          return;
+        }
+        closeObservacionFinalModal();
+      }
+    });
+
+    function editarTexto(td, columnaSheet, odt, cliente) {
+      const sourceIndexForOriginal = parseInt(td.dataset.sourceIndex, 10);
+      const colIndexForOriginal = parseInt(td.dataset.colIndex, 10);
+      const sourceColForOriginal = parseInt(td.dataset.sourceCol, 10);
+      const colIndexToRead = !Number.isNaN(sourceColForOriginal) ? sourceColForOriginal : colIndexForOriginal;
+      let original = td.textContent === "-" ? "" : td.textContent;
+      if (
+        !Number.isNaN(sourceIndexForOriginal) &&
+        !Number.isNaN(colIndexToRead) &&
+        REGISTROS[sourceIndexForOriginal] &&
+        Array.isArray(REGISTROS[sourceIndexForOriginal].fila)
+      ) {
+        const rawValue = REGISTROS[sourceIndexForOriginal].fila[colIndexToRead];
+        original = rawValue === null || rawValue === undefined ? "" : String(rawValue);
+      }
+      if (td.querySelector("input,textarea,select")) return;
+      td.textContent = "";
+
+      const commitValue = (val, extraPayload = {}) => {
+        const fila = parseInt(td.dataset.rowIndex, 10);
+        const sourceIndex = parseInt(td.dataset.sourceIndex, 10);
+        const sourceCol = parseInt(td.dataset.sourceCol, 10);
+        const puestosObs = !Number.isNaN(sourceIndex) && REGISTROS[sourceIndex]
+          ? (REGISTROS[sourceIndex].fila[5] || "")
+          : "";
+        const servicioObs = !Number.isNaN(sourceIndex) && REGISTROS[sourceIndex]
+          ? (REGISTROS[sourceIndex].fila[18] || "")
+          : "";
+
+        if (columnaSheet === 7) {
+          td.innerHTML = formatObservationHtml(puestosObs, val, servicioObs);
+        } else if (columnaSheet === 8) {
+          const principal = Object.prototype.hasOwnProperty.call(extraPayload, "tecnico")
+            ? extraPayload.tecnico || ""
+            : "";
+          const acomp = Object.prototype.hasOwnProperty.call(extraPayload, "acompanante")
+            ? extraPayload.acompanante || ""
+            : "";
+          const currentCol = parseInt(td.dataset.colIndex || "0", 10);
+          td.textContent = currentCol === 7 ? acomp.toString().trim() : principal.toString().trim();
+        } else {
+          td.textContent = val || "-";
+        }
+        if (!Number.isNaN(sourceIndex) && REGISTROS[sourceIndex]) {
+          if (!Number.isNaN(sourceCol) && sourceCol >= 0) {
+            REGISTROS[sourceIndex].fila[sourceCol] = val;
+          }
+          if (Object.prototype.hasOwnProperty.call(extraPayload, "tecnico")) {
+            REGISTROS[sourceIndex].fila[6] = extraPayload.tecnico || "";
+            REGISTROS[sourceIndex].fila[13] = extraPayload.tecnico || "";
+          }
+          if (Object.prototype.hasOwnProperty.call(extraPayload, "acompanante")) {
+            REGISTROS[sourceIndex].fila[7] = extraPayload.acompanante || "";
+            REGISTROS[sourceIndex].fila[14] = extraPayload.acompanante || "";
+          }
+        }
+        google.script.run
+          .withSuccessHandler(() => cargarRegistros())
+          .actualizarCelda(fila, columnaSheet, val, original, extraPayload);
+        if (columnaSheet === 6) {
+          google.script.run.enviarCorreoDerivacionArea(odt || "", cliente || "", val || "");
+        }
+        configureFilters();
+        applyFilters();
+      };
+
+      if (columnaSheet === 6) {
+        const select = document.createElement("select");
+        DERIVACION_OPTIONS.forEach((optionValue) => {
+          const option = document.createElement("option");
+          option.value = optionValue;
+          option.textContent = optionValue;
+          select.appendChild(option);
+        });
+
+        const match = DERIVACION_OPTIONS.find((opt) => equalsNormalized(opt, original));
+        select.value = match || "Pendiente";
+        td.appendChild(select);
+        select.focus();
+
+        let committed = false;
+        const commitFromSelect = async () => {
+          if (committed) return;
+          committed = true;
+          const nuevoValor = (select.value || "").trim();
+          if (equalsNormalized(nuevoValor, "Finalizado por Soporte")) {
+            const decision = await openFinalizadoSoportePrompt(odt || "");
+            if (!decision || !decision.confirmed) {
+              committed = false;
+              td.textContent = original || "-";
+              return;
+            }
+            commitValue(nuevoValor, { observacion_final: decision.observacion });
+            return;
+          }
+          commitValue(nuevoValor);
+        };
+        select.onchange = commitFromSelect;
+        select.onblur = commitFromSelect;
+        return;
+      }
+
+      if (columnaSheet === 8) {
+        const currentCol = parseInt(td.dataset.colIndex || "6", 10);
+        const editingAcompanante = currentCol === 7;
+        const tecnicoActual = (
+          !Number.isNaN(sourceIndexForOriginal) &&
+          REGISTROS[sourceIndexForOriginal] &&
+          REGISTROS[sourceIndexForOriginal].fila
+            ? (REGISTROS[sourceIndexForOriginal].fila[13] || "")
+            : ""
+        ).toString().trim();
+        const acompananteActual = (
+          !Number.isNaN(sourceIndexForOriginal) &&
+          REGISTROS[sourceIndexForOriginal] &&
+          REGISTROS[sourceIndexForOriginal].fila
+            ? (REGISTROS[sourceIndexForOriginal].fila[14] || "")
+            : ""
+        ).toString().trim();
+
+        const select = document.createElement("select");
+        select.style.width = "100%";
+        const empty = document.createElement("option");
+        empty.value = "";
+        empty.textContent = "Sin asignar";
+        select.appendChild(empty);
+        (TECNICOS_OPTIONS || []).forEach((name) => {
+          const option = document.createElement("option");
+          option.value = name;
+          option.textContent = name;
+          select.appendChild(option);
+        });
+        const selectedValue = editingAcompanante ? acompananteActual : tecnicoActual;
+        const exact = [...select.options].find((opt) => equalsNormalized(opt.value, selectedValue));
+        if (exact) select.value = exact.value;
+        td.appendChild(select);
+        select.focus();
+
+        let committed = false;
+        const commitFromSelect = () => {
+          if (committed) return;
+          committed = true;
+          let titular = tecnicoActual;
+          let acomp = acompananteActual;
+
+          if (editingAcompanante) acomp = (select.value || "").trim();
+          else titular = (select.value || "").trim();
+
+          if (titular && acomp && equalsNormalized(titular, acomp)) {
+            alert("Tecnico y acompanante deben ser distintos.");
+            committed = false;
+            setTimeout(() => select.focus(), 0);
+            return;
+          }
+
+          const display = editingAcompanante ? acomp : titular;
+          commitValue(display, { tecnico: titular, acompanante: acomp });
+        };
+        select.onchange = commitFromSelect;
+        select.onblur = commitFromSelect;
+        return;
+      }
+
+      const input = document.createElement(columnaSheet === 7 ? "textarea" : "input");
+      input.value = original;
+      if (columnaSheet === 7) {
+        input.classList.add("observacion-editor");
+        td.style.position = "relative";
+        input.style.position = "absolute";
+        input.style.left = "0";
+        input.style.top = "0";
+        input.style.zIndex = "30";
+        input.style.minWidth = `${Math.max(td.clientWidth, 460)}px`;
+        input.style.width = `${Math.max(td.clientWidth, 460)}px`;
+        input.style.minHeight = "150px";
+        input.style.height = "150px";
+        input.style.resize = "vertical";
+        input.style.boxShadow = "0 10px 24px rgba(0,0,0,.18)";
+      }
+      td.appendChild(input);
+      if (columnaSheet === 7) {
+        // Al abrir Observacion, deja el cursor en una linea nueva al final.
+        if (input.value && !input.value.endsWith("\n")) {
+          input.value += "\n";
+        }
+        const placeCaretAtBottom = () => {
+          input.focus();
+          const end = input.value.length;
+          input.setSelectionRange(end, end);
+          input.scrollTop = input.scrollHeight;
+        };
+        requestAnimationFrame(placeCaretAtBottom);
+        setTimeout(placeCaretAtBottom, 0);
+      } else {
+        input.focus();
+      }
+      input.onblur = () => {
+        const val = input.value.trim();
+        commitValue(val);
+      };
+    }
+
+    function openCerrarODTModal(odt) {
+      const overlay = document.createElement("div");
+      overlay.style.position = "fixed";
+      overlay.style.inset = "0";
+      overlay.style.background = "rgba(0,0,0,.45)";
+      overlay.style.zIndex = "1200";
+      overlay.style.display = "flex";
+      overlay.style.alignItems = "center";
+      overlay.style.justifyContent = "center";
+
+      const modal = document.createElement("div");
+      modal.style.width = "min(560px, 92vw)";
+      modal.style.background = "#fff";
+      modal.style.borderRadius = "10px";
+      modal.style.boxShadow = "0 24px 60px rgba(0,0,0,.25)";
+      modal.style.padding = "16px";
+
+      const title = document.createElement("h3");
+      title.textContent = `Cerrar ODT ${odt}`;
+      title.style.margin = "0 0 12px 0";
+      title.style.fontSize = "18px";
+      modal.appendChild(title);
+
+      const labelImages = document.createElement("div");
+      labelImages.textContent = "Adjuntar imagenes";
+      labelImages.style.fontSize = "13px";
+      labelImages.style.marginBottom = "4px";
+      modal.appendChild(labelImages);
+
+      const inputFiles = document.createElement("input");
+      inputFiles.type = "file";
+      inputFiles.accept = "image/*";
+      inputFiles.multiple = true;
+      inputFiles.style.marginBottom = "10px";
+      modal.appendChild(inputFiles);
+
+      const labelObs = document.createElement("div");
+      labelObs.textContent = "Observacion de cierre";
+      labelObs.style.fontSize = "13px";
+      labelObs.style.marginBottom = "4px";
+      modal.appendChild(labelObs);
+
+      const textarea = document.createElement("textarea");
+      textarea.placeholder = "Escribe la observacion...";
+      textarea.style.minHeight = "120px";
+      textarea.style.marginBottom = "10px";
+      modal.appendChild(textarea);
+
+      const actions = document.createElement("div");
+      actions.style.display = "flex";
+      actions.style.justifyContent = "flex-end";
+      actions.style.gap = "8px";
+
+      const btnCancel = document.createElement("button");
+      btnCancel.textContent = "Cancelar";
+      btnCancel.style.background = "#6c757d";
+
+      const btnSave = document.createElement("button");
+      btnSave.textContent = "Guardar y Finalizar";
+
+      actions.appendChild(btnCancel);
+      actions.appendChild(btnSave);
+      modal.appendChild(actions);
+      overlay.appendChild(modal);
+      document.body.appendChild(overlay);
+      textarea.focus();
+
+      const close = () => {
+        if (overlay.parentElement) overlay.parentElement.removeChild(overlay);
+      };
+
+      overlay.addEventListener("click", (event) => {
+        if (event.target === overlay) close();
+      });
+      btnCancel.onclick = close;
+
+      btnSave.onclick = () => {
+        const obs = (textarea.value || "").trim();
+        const files = inputFiles.files ? [...inputFiles.files] : [];
+        if (!obs) {
+          alert("Debes escribir la observacion de cierre.");
+          return;
+        }
+        if (!files.length) {
+          alert("Debes adjuntar al menos una imagen.");
+          return;
+        }
+
+        const formData = new FormData();
+        formData.append("odt", odt);
+        formData.append("observacion", obs);
+        files.forEach((file) => formData.append("files", file));
+
+        btnSave.disabled = true;
+        btnSave.textContent = "Guardando...";
+
+        google.script.run
+          .withSuccessHandler((response) => {
+            if (response && response.drive_enabled && !response.drive_ok) {
+              const msg = response.drive_error || "No se pudo generar el informe en Drive.";
+              alert(`ODT cerrada, pero hubo un problema con Drive: ${msg}`);
+            }
+            close();
+            cargarRegistros();
+          })
+          .withFailureHandler((error) => {
+            btnSave.disabled = false;
+            btnSave.textContent = "Guardar y Finalizar";
+            alert(error?.message || "No se pudo cerrar la ODT.");
+          })
+          .cerrarODT(formData);
+      };
+    }
+
+    function cargarRegistros() {
+      google.script.run.withSuccessHandler((registros) => {
+        REGISTROS = (registros || []).map((fila, idx) => ({
+          fila: Array.isArray(fila) ? [...fila] : [],
+          rowIndex: idx + 2,
+          sourceIndex: idx,
+        }));
+        configureFilters();
+        applyFilters();
+      }).obtenerRegistrosTabla();
+    }
+
+    let soporteLiveTimer = null;
+    let soporteLiveSyncing = false;
+
+    function isSoporteBusyForRefresh() {
+      const active = document.activeElement;
+      if (active && active !== document.body) {
+        if (
+          active.matches("input, textarea, select, [contenteditable='true'], [contenteditable='']")
+          || active.closest(
+            "#soporteImagenModal.is-open, #finalizadoSoporteModal.is-open, #observacionFinalModal.is-open"
+          )
+        ) {
+          return true;
+        }
+      }
+      if (document.querySelector("td textarea, td input, td select")) return true;
+      if (
+        document.querySelector("#soporteImagenModal.is-open")
+        || document.querySelector("#finalizadoSoporteModal.is-open")
+        || document.querySelector("#observacionFinalModal.is-open")
+      ) {
+        return true;
+      }
+      return false;
+    }
+
+    function refreshSoporteSilently() {
+      if (soporteLiveSyncing) return;
+      if (document.hidden) return;
+      if (isSoporteBusyForRefresh()) return;
+
+      soporteLiveSyncing = true;
+      google.script.run
+        .withSuccessHandler((registros) => {
+          REGISTROS = (registros || []).map((fila, idx) => ({
+            fila: Array.isArray(fila) ? [...fila] : [],
+            rowIndex: idx + 2,
+            sourceIndex: idx,
+          }));
+          configureFilters();
+          applyFilters();
+          soporteLiveSyncing = false;
+        })
+        .withFailureHandler(() => {
+          soporteLiveSyncing = false;
+        })
+        .obtenerRegistrosTabla();
+    }
+
+    function startSoporteLiveRefresh() {
+      if (soporteLiveTimer) clearInterval(soporteLiveTimer);
+      soporteLiveTimer = window.setInterval(refreshSoporteSilently, 20000);
+    }
+
+    function stopSoporteLiveRefresh() {
+      if (!soporteLiveTimer) return;
+      clearInterval(soporteLiveTimer);
+      soporteLiveTimer = null;
+    }
+
+    (function setupTheme() {
+      const storageKey = "atc_support_theme";
+
+      function updateLogoByTheme(dark) {
+        const logoImg = document.getElementById("logoAtcImg");
+        if (!logoImg) return;
+        const darkSrc = logoImg.dataset.darkSrc || "/static/img/logo-atc.png";
+        const lightSrc = logoImg.dataset.lightSrc || "/static/img/logo-atc2.jpeg";
+        const targetSrc = dark ? darkSrc : lightSrc;
+        if (logoImg.getAttribute("src") !== targetSrc) {
+          logoImg.setAttribute("src", targetSrc);
+        }
+      }
+
+      function updateToggleLabel() {
+        const btn = document.getElementById("themeToggle");
+        if (!btn) return;
+        btn.textContent = document.body.classList.contains("dark-mode")
+          ? "Modo claro"
+          : "Modo oscuro";
+      }
+
+      function applyTheme(mode, persist = true) {
+        const dark = mode === "dark";
+        document.body.classList.toggle("dark-mode", dark);
+        updateLogoByTheme(dark);
+        updateToggleLabel();
+        if (persist) {
+          localStorage.setItem(storageKey, dark ? "dark" : "light");
+        }
+      }
+
+      window.addEventListener("DOMContentLoaded", () => {
+        const saved = localStorage.getItem(storageKey);
+        const preferredDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+        applyTheme(saved || (preferredDark ? "dark" : "light"), false);
+
+        const btn = document.getElementById("themeToggle");
+        if (btn) {
+          btn.addEventListener("click", () => {
+            const nextMode = document.body.classList.contains("dark-mode") ? "light" : "dark";
+            applyTheme(nextMode, true);
+          });
+        }
+      });
+    })();
+
+    window.addEventListener("load", () => {
+      const soporteFileInput = document.getElementById("soporteImagenFileInput");
+      const soporteAdjuntarBtn = document.getElementById("soporteImagenAdjuntarBtn");
+      const soportePasteZone = document.getElementById("soporteImagenPasteZone");
+      const soporteImagenModalEl = document.getElementById("soporteImagenModal");
+      if (soporteAdjuntarBtn && soporteFileInput) {
+        soporteAdjuntarBtn.addEventListener("click", () => soporteFileInput.click());
+      }
+      if (soporteFileInput) {
+        soporteFileInput.addEventListener("change", (event) => {
+          addFilesToSoporteModal(event.target.files || []);
+          soporteFileInput.value = "";
+        });
+      }
+      if (soportePasteZone) {
+        soportePasteZone.addEventListener("focus", () => soportePasteZone.classList.add("is-focus"));
+        soportePasteZone.addEventListener("blur", () => soportePasteZone.classList.remove("is-focus"));
+      }
+      if (soporteImagenModalEl) {
+        soporteImagenModalEl.addEventListener("paste", handleSoportePaste);
+      }
+
+      google.script.run.withSuccessHandler((nombre) => {
+        document.getElementById("usuarioActual").textContent = (nombre || "Desconocido");
+      }).getUsuarioActual(ATC_TOKEN);
+      google.script.run.withSuccessHandler((listas) => {
+        TECNICOS_OPTIONS = Array.isArray(listas?.tecnicos)
+          ? [...new Set(listas.tecnicos.map((x) => (x || "").toString().trim()).filter(Boolean))]
+          : [];
+        TECNICOS_OPTIONS.sort((a, b) => a.localeCompare(b, "es", { sensitivity: "base" }));
+        configureFilters();
+        applyFilters();
+      }).obtenerListasBBDD();
+      cargarRegistros();
+      startSoporteLiveRefresh();
+    });
+
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) {
+        stopSoporteLiveRefresh();
+        return;
+      }
+      refreshSoporteSilently();
+      startSoporteLiveRefresh();
+    });
+
+    window.addEventListener("beforeunload", stopSoporteLiveRefresh);
+  </script>
+</body>
+</html>

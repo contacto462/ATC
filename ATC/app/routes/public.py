@@ -1,0 +1,212 @@
+from __future__ import annotations
+
+from fastapi import APIRouter, Body, Depends, HTTPException, Query, Request
+from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.templating import Jinja2Templates
+from pydantic import BaseModel
+from sqlalchemy.orm import Session
+
+from app.core.db import get_db
+from app.core.config import settings
+from app.models.ticket import Ticket
+from app.services.sla_feedback_service import (
+    apply_ticket_sla_feedback,
+    build_sla_feedback_link,
+    build_sla_feedback_token,
+    extract_feedback_from_payload,
+    get_or_create_ticket_sla_feedback,
+    parse_rating_value,
+    parse_resolution_value,
+    parse_ticket_id_value,
+    store_sla_feedback_event,
+    verify_sla_feedback_token,
+)
+from app.services.ticket_service import create_ticket_from_public
+
+
+router = APIRouter(prefix="/public", tags=["public"])
+templates = Jinja2Templates(directory="app/templates")
+
+
+class PublicTicketCreate(BaseModel):
+    name: str
+    email: str
+    subject: str
+    message: str
+
+
+@router.post("/tickets")
+def create_public_ticket(data: PublicTicketCreate, db: Session = Depends(get_db)):
+    ticket = create_ticket_from_public(
+        db=db,
+        name=data.name,
+        email=data.email,
+        subject=data.subject,
+        message_text=data.message,
+    )
+
+    return {
+        "ticket_id": ticket.id,
+        "status": "created",
+    }
+
+
+@router.get("/tickets/{ticket_id}/sla-feedback", response_class=HTMLResponse)
+def ticket_sla_feedback(
+    request: Request,
+    ticket_id: int,
+    token: str = Query(...),
+    rating: int | None = Query(None, ge=1, le=5),
+    resolved: str | None = Query(None),
+    db: Session = Depends(get_db),
+):
+    ticket = db.get(Ticket, ticket_id)
+    if not ticket:
+        raise HTTPException(status_code=404, detail="Ticket no encontrado")
+
+    if not verify_sla_feedback_token(token, ticket_id):
+        raise HTTPException(status_code=403, detail="Token invalido")
+
+    resolved_value: bool | None = None
+    if resolved is not None:
+        lowered = resolved.strip().lower()
+        if lowered in {"si", "sí", "yes", "true", "1"}:
+            resolved_value = True
+        elif lowered in {"no", "false", "0"}:
+            resolved_value = False
+        else:
+            raise HTTPException(status_code=400, detail="Respuesta invalida")
+
+    if rating is not None or resolved_value is not None:
+        feedback = apply_ticket_sla_feedback(
+            db,
+            ticket_id=ticket_id,
+            rating=rating,
+            resolved=resolved_value,
+        )
+    else:
+        feedback = get_or_create_ticket_sla_feedback(db, ticket_id)
+
+    token_value = build_sla_feedback_token(ticket_id)
+
+    return templates.TemplateResponse(
+        "public_sla_feedback.html",
+        {
+            "request": request,
+            "ticket": ticket,
+            "feedback": feedback,
+            "rating_links": {
+                value: build_sla_feedback_link(ticket_id=ticket_id, token=token_value, rating=value)
+                for value in range(1, 6)
+            },
+            "resolved_yes_link": build_sla_feedback_link(ticket_id=ticket_id, token=token_value, resolved="si"),
+            "resolved_no_link": build_sla_feedback_link(ticket_id=ticket_id, token=token_value, resolved="no"),
+            "is_complete": (
+                feedback.technician_rating is not None
+                and feedback.resolution_satisfied is not None
+            ),
+        },
+    )
+
+
+@router.get("/encuesta/{ticket_id}", response_class=HTMLResponse)
+def ticket_sla_feedback_corporate(
+    request: Request,
+    ticket_id: int,
+    token: str = Query(...),
+    rating: int | None = Query(None, ge=1, le=5),
+    resolved: str | None = Query(None),
+    db: Session = Depends(get_db),
+):
+    return ticket_sla_feedback(
+        request=request,
+        ticket_id=ticket_id,
+        token=token,
+        rating=rating,
+        resolved=resolved,
+        db=db,
+    )
+
+
+@router.post("/fillout/webhook")
+def fillout_sla_webhook(
+    payload: dict = Body(...),
+    token: str | None = Query(None),
+    db: Session = Depends(get_db),
+):
+    configured_token = (settings.SLA_WEBHOOK_TOKEN or "").strip()
+    provided_token = (token or "").strip()
+
+    if configured_token and provided_token != configured_token:
+        raise HTTPException(status_code=403, detail="Webhook token invalido")
+
+    ticket_id, rating, resolved = extract_feedback_from_payload(payload)
+
+    query_params = payload.get("queryParameters") if isinstance(payload, dict) else None
+    if isinstance(query_params, dict):
+        if ticket_id is None:
+            ticket_id = parse_ticket_id_value(
+                query_params.get("ticket_id") or query_params.get("ticketId")
+            )
+
+    if ticket_id is None:
+        top_ticket_id = payload.get("ticket_id") or payload.get("ticketId")
+        ticket_id = parse_ticket_id_value(top_ticket_id)
+
+    if rating is None:
+        rating = parse_rating_value(
+            payload.get("atencion_tecnico")
+            or payload.get("technician_rating")
+            or payload.get("rating")
+        )
+
+    if resolved is None:
+        resolved = parse_resolution_value(
+            payload.get("tiempo_resolucion")
+            or payload.get("resolution_satisfied")
+            or payload.get("resolved")
+        )
+
+    store_sla_feedback_event(
+        db,
+        payload=payload,
+        source="fillout",
+        ticket_id=ticket_id,
+        rating=rating,
+        resolved=resolved,
+    )
+
+    if ticket_id is None:
+        return JSONResponse(
+            {
+                "ok": False,
+                "stored": True,
+                "message": "Webhook recibido, pero no se pudo identificar ticket_id.",
+            },
+            status_code=202,
+        )
+
+    ticket = db.get(Ticket, ticket_id)
+    if not ticket:
+        return JSONResponse(
+            {
+                "ok": False,
+                "stored": True,
+                "message": f"Webhook recibido, pero el ticket #{ticket_id} no existe.",
+            },
+            status_code=202,
+        )
+
+    feedback = apply_ticket_sla_feedback(
+        db,
+        ticket_id=ticket_id,
+        rating=rating,
+        resolved=resolved,
+    )
+
+    return {
+        "ok": True,
+        "ticket_id": ticket_id,
+        "technician_rating": feedback.technician_rating,
+        "resolution_satisfied": feedback.resolution_satisfied,
+    }

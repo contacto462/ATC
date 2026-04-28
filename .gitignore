@@ -1,0 +1,13 @@
+.env
+*.json
+*.db
+__pycache__/
+*.pyc
+
+ATC/.env
+ATC/secrets/
+ATC/secrets/**
+Incidencias/.env
+Incidencias/secrets/
+Incidencias/secrets/**
+**/secrets/**

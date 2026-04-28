@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tabla Protocolos</title>
+  <style>
+    :root{
+      --bg:#08161a;
+      --panel:#101f25;
+      --panel-2:#142a31;
+      --line:rgba(255,255,255,.12);
+      --text:#f4f8f9;
+      --muted:#bdd0d6;
+      --orange:#ff762b;
+      --blue:#2f5b72;
+      --ok:#25c483;
+      --bad:#ff7474;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      min-height:100vh;
+      font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(circle at 18% 12%,rgba(255,118,43,.11),transparent 28%),
+        linear-gradient(145deg,#071115 0%,#10252c 54%,#17363d 100%);
+      padding:24px;
+    }
+    .shell{width:min(1380px,100%);margin:0 auto}
+    .head{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:18px}
+    h1{margin:0;font-size:32px;letter-spacing:-.03em}
+    p{margin:6px 0 0;color:var(--muted)}
+    .actions{display:flex;gap:10px;flex-wrap:wrap}
+    .btn{
+      min-height:40px;
+      padding:10px 14px;
+      border-radius:12px;
+      border:1px solid var(--line);
+      color:var(--text);
+      background:rgba(255,255,255,.055);
+      text-decoration:none;
+      font-weight:800;
+      cursor:pointer;
+    }
+    .btn:hover{background:rgba(255,255,255,.09)}
+    .btn-main{border-color:rgba(255,118,43,.55);background:linear-gradient(135deg,#ff6e23,#ff8b33);color:#fff}
+    .panel{
+      border:1px solid var(--line);
+      border-radius:18px;
+      background:linear-gradient(180deg,rgba(255,255,255,.075),rgba(255,255,255,.035));
+      box-shadow:0 24px 60px rgba(0,0,0,.26);
+      padding:18px;
+      margin-bottom:16px;
+    }
+    .filters{
+      display:grid;
+      grid-template-columns:1.1fr 1.1fr .9fr .8fr .8fr auto;
+      gap:12px;
+      align-items:end;
+    }
+    label{display:block;margin-bottom:7px;color:#fff;font-size:13px;font-weight:800}
+    input,select{
+      width:100%;
+      min-height:42px;
+      border:1px solid rgba(255,255,255,.14);
+      border-radius:12px;
+      background:#0b171b;
+      color:var(--text);
+      padding:9px 11px;
+      outline:none;
+    }
+    input:focus,select:focus{border-color:rgba(255,118,43,.65);box-shadow:0 0 0 3px rgba(255,118,43,.12)}
+    .meta{display:flex;align-items:center;justify-content:space-between;gap:12px;color:var(--muted);font-weight:700}
+    .table-wrap{overflow:auto;border:1px solid var(--line);border-radius:16px;background:rgba(0,0,0,.16)}
+    table{width:100%;min-width:1260px;border-collapse:collapse}
+    th,td{padding:11px 12px;border-bottom:1px solid rgba(255,255,255,.08);text-align:left;vertical-align:top;font-size:13px}
+    th{position:sticky;top:0;background:#12252b;color:#dfeaed;z-index:1}
+    tr:hover td{background:rgba(255,255,255,.035)}
+    .pill{display:inline-flex;align-items:center;justify-content:center;min-width:36px;padding:4px 8px;border-radius:999px;font-weight:900;font-size:12px}
+    .pill.ok{background:rgba(37,196,131,.16);color:#83ffc4;border:1px solid rgba(37,196,131,.30)}
+    .pill.bad{background:rgba(255,116,116,.14);color:#ffb3b3;border:1px solid rgba(255,116,116,.25)}
+    .obs{max-width:340px;white-space:normal;line-height:1.45;color:#d9e5e8}
+    .msg{min-height:24px;margin-top:12px;font-weight:800}
+    .err{color:#ffb3b3}.ok-text{color:#83ffc4}
+    @media (max-width:980px){
+      body{padding:16px}
+      .head{flex-direction:column;align-items:flex-start}
+      .filters{grid-template-columns:1fr}
+      .actions{width:100%}
+      .actions .btn{flex:1;text-align:center}
+      .meta{flex-direction:column;align-items:flex-start}
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="head">
+      <div>
+        <h1>Tabla Protocolos</h1>
+        <p>Consulta de registros preventivos e intrusivos.</p>
+      </div>
+      <div class="actions">
+        <a class="btn" href="/?form=panelSelectorCoordinacion&token={{ token|default('') }}">Volver al panel</a>
+        <a class="btn" href="/?form=coordinacion&token={{ token|default('') }}">Coordinacion</a>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="filters">
+        <div>
+          <label for="cliente">Cliente exacto</label>
+          <input id="cliente" placeholder="Todos" />
+        </div>
+        <div>
+          <label for="sucursal">Sucursal exacta</label>
+          <input id="sucursal" placeholder="Todas" />
+        </div>
+        <div>
+          <label for="tipo">Tipo</label>
+          <select id="tipo">
+            <option value="">Todos</option>
+            <option>Preventivo</option>
+            <option>Intrusivo</option>
+          </select>
+        </div>
+        <div>
+          <label for="desde">Desde</label>
+          <input id="desde" type="date" />
+        </div>
+        <div>
+          <label for="hasta">Hasta</label>
+          <input id="hasta" type="date" />
+        </div>
+        <button class="btn btn-main" type="button" onclick="cargar()">Aplicar</button>
+      </div>
+      <div id="msg" class="msg"></div>
+    </section>
+
+    <section class="panel">
+      <div class="meta">
+        <span id="total">Total: 0</span>
+        <button class="btn" type="button" onclick="limpiar()">Limpiar filtros</button>
+      </div>
+    </section>
+
+    <section class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Fecha</th>
+            <th>Cliente</th>
+            <th>Sucursal</th>
+            <th>Tipo</th>
+            <th>Puesto</th>
+            <th>Operador</th>
+            <th>Detectado</th>
+            <th>Efectivo</th>
+            <th>Sirena</th>
+            <th>Voz</th>
+            <th>Carab.</th>
+            <th>Alpha3</th>
+            <th>Informado</th>
+            <th>Bitacora</th>
+            <th>Exitoso</th>
+            <th>Observaciones</th>
+          </tr>
+        </thead>
+        <tbody id="tbody">
+          <tr><td colspan="17">Cargando...</td></tr>
+        </tbody>
+      </table>
+    </section>
+  </main>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const safe = (v) => String(v ?? "").replace(/[&<>"']/g, (m) => ({
+      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+    }[m]));
+
+    function pill(value) {
+      const v = String(value || "").trim().toUpperCase();
+      if (!v) return "";
+      const cls = v === "SI" ? "ok" : v === "NO" ? "bad" : "";
+      return `<span class="pill ${cls}">${safe(v)}</span>`;
+    }
+
+    function params() {
+      const qs = new URLSearchParams();
+      const cliente = $("cliente").value.trim();
+      const sucursal = $("sucursal").value.trim();
+      const tipo = $("tipo").value.trim();
+      const desde = $("desde").value;
+      const hasta = $("hasta").value;
+      if (cliente) qs.set("cliente", cliente);
+      if (sucursal) qs.set("sucursal", sucursal);
+      if (tipo) qs.set("tipo_protocolo", tipo);
+      if (desde) qs.set("fecha_desde", desde);
+      if (hasta) qs.set("fecha_hasta", hasta);
+      qs.set("limit", "1000");
+      return qs.toString();
+    }
+
+    async function cargar() {
+      $("msg").textContent = "Cargando registros...";
+      $("msg").className = "msg";
+      try {
+        const res = await fetch(`/api/protocolos/registros?${params()}`);
+        const data = await res.json();
+        if (!res.ok) throw new Error(data?.detail || "No se pudo cargar la tabla.");
+        const rows = Array.isArray(data) ? data : [];
+        $("total").textContent = `Total: ${rows.length}`;
+        $("tbody").innerHTML = rows.length ? rows.map((r) => `
+          <tr>
+            <td>${safe(r.id)}</td>
+            <td>${safe(r.fecha)}</td>
+            <td>${safe(r.cliente)}</td>
+            <td>${safe(r.sucursal)}</td>
+            <td>${safe(r.tipo_protocolo)}</td>
+            <td>${safe(r.puesto)}</td>
+            <td>${safe(r.operador)}</td>
+            <td>${pill(r.detectado)}</td>
+            <td>${pill(r.efectivo)}</td>
+            <td>${pill(r.sirena)}</td>
+            <td>${pill(r.voz)}</td>
+            <td>${pill(r.carabineros)}</td>
+            <td>${pill(r.alpha3)}</td>
+            <td>${pill(r.informado)}</td>
+            <td>${pill(r.bitacora)}</td>
+            <td>${pill(r.protocolo_exitoso)}</td>
+            <td class="obs">${safe(r.observaciones)}</td>
+          </tr>
+        `).join("") : `<tr><td colspan="17">Sin registros para los filtros seleccionados.</td></tr>`;
+        $("msg").textContent = "Tabla actualizada.";
+        $("msg").className = "msg ok-text";
+      } catch (err) {
+        $("tbody").innerHTML = `<tr><td colspan="17">No se pudo cargar la informacion.</td></tr>`;
+        $("msg").textContent = err.message || "Error inesperado.";
+        $("msg").className = "msg err";
+      }
+    }
+
+    function limpiar() {
+      ["cliente", "sucursal", "desde", "hasta"].forEach((id) => $(id).value = "");
+      $("tipo").value = "";
+      cargar();
+    }
+
+    cargar();
+  </script>
+</body>
+</html>
